@@ -1,235 +1,214 @@
-import React, { useState, useEffect } from "react";
+"use client"
 
-// Структура игры
+import { useEffect, useState } from "react"
+
 interface Game {
-  title: string;
-  description: string;
-  players: string;
-  tags: string;
-  image: string;
-  link: string;
+  title: string
+  description: string
+  players: string
+  tags: string
+  image: string
+  link: string
 }
 
-// Список доступных изображений
+// Актуальные изображения из папки /public/uploads
 const availableImages = [
+  "/uploads/bt0.jpg",
   "/uploads/bt1.jpg",
-  "/uploads/bt2.jpg",
-  "/uploads/comanda.jpg",
-  "/uploads/ki1.jpg",
+  "/uploads/bt12.jpg",
+  "/uploads/bt5.jpg",
+  "/uploads/bt6.jpg",
+  "/uploads/bt7.jpg",
+  "/uploads/ki0.jpg",
   "/uploads/ki2.jpg",
   "/uploads/ki3.jpg",
   "/uploads/ki4.jpg",
   "/uploads/ki5.jpg",
   "/uploads/ki6.jpg",
-  "/uploads/ki7.jpg",
-  "/uploads/ki8.jpg",
-  "/uploads/ki9.jpg",
-  "/uploads/ki10.jpg",
-  "/uploads/ki11.jpg",
-  "/uploads/ki12.jpg",
   "/uploads/kn1.jpg",
+  "/uploads/kn10.jpg",
   "/uploads/kn2.jpg",
   "/uploads/kn3.png",
+  "/uploads/kn6.jpg",
+  "/uploads/kn7.jpg",
+  "/uploads/kn8.jpg",
+  "/uploads/kn9.jpg",
   "/uploads/logo.png",
-  "/uploads/m1.jpg",
-  "/uploads/m2.jpg",
-  "/uploads/p1.jpg",
-  "/uploads/p2.jpg",
-  "/uploads/p3.jpg",
-  "/uploads/p4.jpg",
-  "/uploads/p5.jpg",
-  "/uploads/p6.jpg",
-  "/uploads/p7.jpg",
-  "/uploads/p8.jpg",
-  "/uploads/p9.jpg",
-  "/uploads/p10.jpg",
-];
+  "/uploads/pv10.jpg",
+  "/uploads/pv11.jpg",
+  "/uploads/pv3.jpg",
+  "/uploads/pv4.jpg",
+  "/uploads/pv5.jpg",
+  "/uploads/pv6.jpg",
+  "/uploads/rn10.jpg",
+  "/uploads/rn9.jpg",
+]
 
-// Начальные данные
 const initialGamesData: Game[] = [
   {
     title: "Коллекционер Игр",
-    description: "Лондон, туман, ритуальные убийства и исчезнувшие артефакты. Вас ждёт расследование мистического дела в плену у древней игры.",
+    description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
     players: "6-12 человек",
     tags: "Мистика, Детектив",
     image: "/uploads/ki2.jpg",
     link: "/game/collector",
   },
   {
-    title: "Берму́дский Треугольник",
-    description: "Остров, на котором всё не так. Странные события, весёлое безумие и комедия на грани фантастики.",
+    title: "Бермудский Треугольник",
+    description: "Фантастическая комедия на таинственном острове.",
     players: "8-15 человек",
     tags: "Комедия, Фантастика",
-    image: "/uploads/ki2.jpg",
+    image: "/uploads/ki3.jpg",
     link: "/game/bermuda",
   },
   {
     title: "Кланы Нью-Йорка",
-    description: "Сигары, виски и рулетка. Гангстерские интриги в атмосфере подпольного казино тридцатых.",
+    description: "Гангстерская вечеринка с казино и интригами.",
     players: "10-20 человек",
-    tags: "Гангстеры, Казино",
-    image: "/uploads/ki3.jpg",
+    tags: "Гангстеры, Интриги",
+    image: "/uploads/ki4.jpg",
     link: "/game/new-york-clans",
   },
   {
     title: "Петля Времени",
-    description: "Механизмы, алхимия и свет во тьме. Вернитесь назад в будущее и раскройте тайну волшебной хижины.",
+    description: "Путешествие во времени, алхимия и загадочная хижина.",
     players: "6-12 человек",
     tags: "Стимпанк, Головоломки",
-    image: "/uploads/ki4.jpg",
+    image: "/uploads/ki5.jpg",
     link: "/game/time-loop",
   },
   {
     title: "Яхта",
-    description: "Послевоенный рейс — к новой надежде. Яхта, документы, драгоценности — и каждый пассажир не тот, за кого себя выдает.",
+    description: "Исторический триллер на послевоенной яхте с шпионажем и драгоценностями.",
     players: "8-16 человек",
     tags: "Детектив, Интриги",
-    image: "/uploads/ki5.jpg",
+    image: "/uploads/ki6.jpg",
     link: "/game/yacht",
   },
-];
+]
 
 export default function GamesEditor() {
-  const [gamesData, setGamesData] = useState<Game[]>(initialGamesData);
+  const [gamesData, setGamesData] = useState<Game[]>(initialGamesData)
 
-  // Загрузка из localStorage при старте
   useEffect(() => {
-    const saved = localStorage.getItem("savedGames");
+    const saved = localStorage.getItem("savedGames")
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved)
         if (Array.isArray(parsed)) {
-          setGamesData(parsed);
+          setGamesData(parsed)
         }
-      } catch (e) {
-        console.error("Ошибка при чтении savedGames:", e);
+      } catch (error) {
+        console.warn("Ошибка загрузки savedGames:", error)
       }
     }
-  }, []);
+  }, [])
 
-  // Автосохранение при изменениях
-  useEffect(() => {
-    localStorage.setItem("savedGames", JSON.stringify(gamesData));
-    window.dispatchEvent(new Event("gamesDataUpdated"));
-  }, [gamesData]);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: keyof Game,
-    index: number
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    index: number,
+    field: keyof Game
   ) => {
-    const value = e.target.value;
-    setGamesData((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
+    const value = e.target.value
+    const updated = [...gamesData]
+    updated[index] = { ...updated[index], [field]: value }
+    setGamesData(updated)
+  }
 
-  const handleImageChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    index: number
-  ) => {
-    const value = e.target.value;
-    setGamesData((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], image: value };
-      return updated;
-    });
-  };
-
-  const handleSave = (index: number) => {
-    alert(`Игра "${gamesData[index].title}" сохранена!`);
-  };
+  const handleSave = () => {
+    localStorage.setItem("savedGames", JSON.stringify(gamesData))
+    alert("Игры сохранены!")
+    window.dispatchEvent(new Event("gamesDataUpdated"))
+  }
 
   return (
-    <div className="games-editor p-4">
-      <h2 className="text-2xl font-bold mb-4">Редактировать игры</h2>
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold mb-4">Редактирование игр</h2>
 
-      <div className="grid grid-cols-1 gap-6">
-        {gamesData.map((game, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold mb-2">{game.title}</h3>
+      {gamesData.map((game, index) => (
+        <div key={index} className="p-4 border rounded-lg shadow bg-white space-y-4">
+          <h3 className="text-lg font-bold">Игра {index + 1}</h3>
 
-            <div className="mb-3">
-              <label className="block mb-1">Название</label>
-              <input
-                type="text"
-                value={game.title}
-                onChange={(e) => handleInputChange(e, "title", index)}
-                className="w-full p-2 border rounded"
-              />
-            </div>
+          <div>
+            <label className="block mb-1 font-medium">Название</label>
+            <input
+              type="text"
+              value={game.title}
+              onChange={(e) => handleChange(e, index, "title")}
+              className="w-full p-2 border rounded"
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="block mb-1">Описание</label>
-              <textarea
-                value={game.description}
-                onChange={(e) => handleInputChange(e, "description", index)}
-                className="w-full p-2 border rounded"
-                rows={3}
-              />
-            </div>
+          <div>
+            <label className="block mb-1 font-medium">Описание</label>
+            <textarea
+              value={game.description}
+              onChange={(e) => handleChange(e, index, "description")}
+              className="w-full p-2 border rounded"
+              rows={3}
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="block mb-1">Кол-во игроков</label>
-              <input
-                type="text"
-                value={game.players}
-                onChange={(e) => handleInputChange(e, "players", index)}
-                className="w-full p-2 border rounded"
-              />
-            </div>
+          <div>
+            <label className="block mb-1 font-medium">Кол-во игроков</label>
+            <input
+              type="text"
+              value={game.players}
+              onChange={(e) => handleChange(e, index, "players")}
+              className="w-full p-2 border rounded"
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="block mb-1">Теги</label>
-              <input
-                type="text"
-                value={game.tags}
-                onChange={(e) => handleInputChange(e, "tags", index)}
-                className="w-full p-2 border rounded"
-              />
-            </div>
+          <div>
+            <label className="block mb-1 font-medium">Теги</label>
+            <input
+              type="text"
+              value={game.tags}
+              onChange={(e) => handleChange(e, index, "tags")}
+              className="w-full p-2 border rounded"
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="block mb-1">Ссылка</label>
-              <input
-                type="text"
-                value={game.link}
-                onChange={(e) => handleInputChange(e, "link", index)}
-                className="w-full p-2 border rounded"
-              />
-            </div>
+          <div>
+            <label className="block mb-1 font-medium">Ссылка</label>
+            <input
+              type="text"
+              value={game.link}
+              onChange={(e) => handleChange(e, index, "link")}
+              className="w-full p-2 border rounded"
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="block mb-1">Изображение</label>
-              <select
-                value={game.image}
-                onChange={(e) => handleImageChange(e, index)}
-                className="w-full p-2 border rounded mb-2"
-              >
-                {availableImages.map((img) => (
-                  <option key={img} value={img}>
-                    {img.replace("/uploads/", "")}
-                  </option>
-                ))}
-              </select>
+          <div>
+            <label className="block mb-1 font-medium">Изображение</label>
+            <select
+              value={game.image}
+              onChange={(e) => handleChange(e, index, "image")}
+              className="w-full p-2 border rounded"
+            >
+              {availableImages.map((src) => (
+                <option key={src} value={src}>
+                  {src.replace("/uploads/", "")}
+                </option>
+              ))}
+            </select>
+            <div className="mt-2">
               <img
                 src={game.image}
-                alt={game.title}
-                className="mt-2 w-32 h-32 object-cover rounded border"
+                alt="превью"
+                className="w-40 h-32 object-cover rounded border"
               />
             </div>
-
-            <button
-              onClick={() => handleSave(index)}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Сохранить игру
-            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+
+      <button
+        onClick={handleSave}
+        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+      >
+        Сохранить все игры
+      </button>
     </div>
-  );
+  )
 }
