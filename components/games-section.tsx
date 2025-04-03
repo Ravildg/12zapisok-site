@@ -1,70 +1,49 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Clock, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
-// Тип игры
 interface Game {
-  id: number
   title: string
   description: string
   players: string
   tags: string | string[]
   image: string
-  duration: string
-  link?: string
+  link: string
+  duration?: string
 }
 
-// Запасной список игр (на случай если localStorage пустой или битый)
+// Запасной список на случай пустого localStorage
 const fallbackGames: Game[] = [
   {
-    id: 1,
     title: "Коллекционер Игр",
-    description:
-      "Лондон, туман, ритуальные убийства и исчезнувшие артефакты. Вас ждёт расследование мистического дела в плену у древней игры.",
-    image: "/uploads/ki2.jpg",
-    duration: "2 часа",
+    description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
     players: "6-12 человек",
     tags: ["Мистика", "Детектив"],
+    image: "/uploads/ki2.jpg",
+    link: "/game/collector",
+    duration: "2 часа",
   },
   {
-    id: 2,
     title: "Бермудский Треугольник",
-    description: "Остров, на котором всё не так. Странные события, весёлое безумие и комедия на грани фантастики.",
-    image: "/uploads/ki2.jpg",
-    duration: "1.5 часа",
+    description: "Фантастическая комедия на таинственном острове.",
     players: "8-15 человек",
     tags: ["Комедия", "Фантастика"],
+    image: "/uploads/ki3.jpg",
+    link: "/game/bermuda",
+    duration: "1.5 часа",
   },
   {
-    id: 3,
     title: "Кланы Нью-Йорка",
-    description: "Сигары, виски и рулетка. Гангстерские интриги в атмосфере подпольного казино тридцатых.",
-    image: "/uploads/ki3.jpg",
-    duration: "2 часа",
+    description: "Гангстерская вечеринка с казино и интригами.",
     players: "10-20 человек",
     tags: ["Гангстеры", "Интриги"],
-  },
-  {
-    id: 4,
-    title: "Петля Времени",
-    description: "Механизмы, алхимия и свет во тьме. Вернитесь назад в будущее и раскройте тайну волшебной хижины.",
     image: "/uploads/ki4.jpg",
+    link: "/game/new-york-clans",
     duration: "2 часа",
-    players: "6-12 человек",
-    tags: ["Стимпанк", "Головоломки"],
-  },
-  {
-    id: 5,
-    title: "Яхта",
-    description:
-      "Послевоенный рейс — к новой надежде. Яхта, документы, драгоценности — и каждый пассажир не тот, за кого себя выдаёт.",
-    image: "/uploads/ki5.jpg",
-    duration: "2.5 часа",
-    players: "8-16 человек",
-    tags: ["Детектив", "Интриги"],
   },
 ]
 
@@ -77,16 +56,14 @@ export default function GamesSection() {
       if (saved) {
         try {
           const parsed: Game[] = JSON.parse(saved)
-          // Убедимся, что у каждой игры есть id
           const enriched = parsed.map((g, i) => ({
             ...g,
-            id: i + 1,
             tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t) => t.trim()),
-            duration: g.duration || "2 часа", // если вдруг не добавили поле в редакторе
+            duration: g.duration || "2 часа",
           }))
           setGames(enriched)
         } catch (e) {
-          console.warn("Ошибка при парсинге savedGames, используем запасной список", e)
+          console.warn("Ошибка при загрузке savedGames:", e)
         }
       }
     }
@@ -94,9 +71,8 @@ export default function GamesSection() {
 
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative">
-      {/* Декоративные линии */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30"></div>
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30" />
 
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12">
@@ -109,27 +85,32 @@ export default function GamesSection() {
 
           <div className="flex items-center space-x-2 text-purple-300">
             <span className="text-sm">Выбери свою историю</span>
-            <div className="w-12 h-px bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            <div className="w-12 h-px bg-gradient-to-r from-purple-500 to-pink-500" />
           </div>
         </div>
 
         <div className="space-y-8">
-          {games.map((game) => (
+          {games.map((game, index) => (
             <div
-              key={game.id}
+              key={index}
               className="flex flex-col md:flex-row bg-[#1A1333] rounded-xl overflow-hidden border border-purple-900/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,43,226,0.2)]"
             >
               <div className="relative md:w-1/3 h-60 md:h-auto">
-                <Image src={game.image || "/placeholder.svg"} alt={game.title} fill className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1A1333]/70 to-transparent md:bg-gradient-to-l"></div>
+                <Image
+                  src={game.image || "/placeholder.svg"}
+                  alt={game.title}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1A1333]/70 to-transparent md:bg-gradient-to-l" />
               </div>
 
               <div className="p-6 md:w-2/3 flex flex-col justify-between">
                 <div>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {(game.tags as string[]).map((tag, index) => (
+                    {(game.tags as string[]).map((tag, i) => (
                       <span
-                        key={index}
+                        key={i}
                         className="px-3 py-1 text-xs rounded-full bg-purple-900/30 text-purple-300 border border-purple-500/20"
                       >
                         {tag}
@@ -145,7 +126,6 @@ export default function GamesSection() {
                       <Clock className="h-4 w-4 mr-2" />
                       <span className="text-sm">{game.duration}</span>
                     </div>
-
                     <div className="flex items-center text-purple-300">
                       <Users className="h-4 w-4 mr-2" />
                       <span className="text-sm">{game.players}</span>
@@ -153,13 +133,25 @@ export default function GamesSection() {
                   </div>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="self-start border-purple-500 text-purple-300 hover:bg-purple-500/20 group"
-                >
-                  Подробнее
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                {game.link ? (
+                  <Link href={game.link}>
+                    <Button
+                      variant="outline"
+                      className="self-start border-purple-500 text-purple-300 hover:bg-purple-500/20 group"
+                    >
+                      Подробнее
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    variant="outline"
+                    disabled
+                    className="self-start border-purple-500 text-purple-300 opacity-50"
+                  >
+                    Ссылка не указана
+                  </Button>
+                )}
               </div>
             </div>
           ))}
