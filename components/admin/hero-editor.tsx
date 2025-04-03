@@ -2,28 +2,8 @@
 
 import { useEffect, useState } from "react"
 
-type HeroData = {
-  title: string
-  subtitle: string
-  description: string
-  image: string
-}
-
-// Все изображения из public/uploads/
-const availableImages = [
-  "bt1.jpg",
-  "comanda.jpg",
-  "ki2.jpg",
-  "ki3.jpg",
-  "ki4.jpg",
-  "ki5.jpg",
-  "kn1.jpg",
-  "kn2.jpg",
-  "kn3.png",
-  "logo.png",
-]
-
-const fallbackData: HeroData = {
+const DEFAULT_DATA = {
+  badge: "Новая реальность ждёт тебя",
   title: 'Квест-кафе "12 записок"',
   subtitle: "Погрузи команду в игру",
   description:
@@ -32,20 +12,11 @@ const fallbackData: HeroData = {
 }
 
 export default function HeroEditor() {
-  const [heroData, setHeroData] = useState<HeroData>(fallbackData)
+  const [heroData, setHeroData] = useState(DEFAULT_DATA)
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("heroData")
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (parsed && parsed.title && parsed.subtitle && parsed.description) {
-          setHeroData(parsed)
-        }
-      }
-    } catch (err) {
-      console.warn("Ошибка загрузки heroData:", err)
-    }
+    const saved = localStorage.getItem("heroData")
+    if (saved) setHeroData(JSON.parse(saved))
   }, [])
 
   const handleChange = (
@@ -55,8 +26,9 @@ export default function HeroEditor() {
     setHeroData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleImageSelect = (fileName: string) => {
-    setHeroData((prev) => ({ ...prev, image: `/uploads/${fileName}` }))
+  const handleImageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    setHeroData((prev) => ({ ...prev, image: value }))
   }
 
   const handleSave = () => {
@@ -64,62 +36,88 @@ export default function HeroEditor() {
     alert("Главная секция сохранена!")
   }
 
+  // список файлов, загруженных в /public/uploads (ручной список из скриншота)
+  const uploadedImages = [
+    "/uploads/bt1.jpg",
+    "/uploads/comanda.jpg",
+    "/uploads/ki2.jpg",
+    "/uploads/ki3.jpg",
+    "/uploads/ki4.jpg",
+    "/uploads/ki5.jpg",
+    "/uploads/kn1.jpg",
+    "/uploads/kn2.jpg",
+    "/uploads/kn3.png",
+    "/uploads/logo.png",
+  ]
+
   return (
     <div className="space-y-4">
+      <h2 className="text-xl font-semibold mb-2">Редактирование главной секции</h2>
+
       <div>
-        <label className="block font-semibold mb-1">Заголовок</label>
+        <label className="block font-medium mb-1">Бейдж (маленький текст над заголовком)</label>
+        <input
+          type="text"
+          name="badge"
+          value={heroData.badge}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Заголовок</label>
         <input
           type="text"
           name="title"
           value={heroData.title}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className="w-full p-2 border rounded"
         />
       </div>
 
       <div>
-        <label className="block font-semibold mb-1">Подзаголовок</label>
+        <label className="block font-medium mb-1">Подзаголовок</label>
         <input
           type="text"
           name="subtitle"
           value={heroData.subtitle}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className="w-full p-2 border rounded"
         />
       </div>
 
       <div>
-        <label className="block font-semibold mb-1">Описание</label>
+        <label className="block font-medium mb-1">Описание</label>
         <textarea
           name="description"
           value={heroData.description}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className="w-full p-2 border rounded"
           rows={4}
         />
       </div>
 
       <div>
-        <label className="block font-semibold mb-1">Изображение</label>
-        <div className="flex gap-4 flex-wrap">
-          {availableImages.map((file) => (
-            <div
-              key={file}
-              className={`cursor-pointer border-2 rounded p-1 ${
-                heroData.image === `/uploads/${file}`
-                  ? "border-blue-500"
-                  : "border-transparent"
-              }`}
-              onClick={() => handleImageSelect(file)}
-            >
-              <img
-                src={`/uploads/${file}`}
-                alt={file}
-                className="w-32 h-20 object-cover rounded"
-              />
-              <p className="text-xs text-center mt-1">{file}</p>
-            </div>
+        <label className="block font-medium mb-1">Изображение</label>
+        <select
+          name="image"
+          value={heroData.image}
+          onChange={handleImageSelect}
+          className="w-full p-2 border rounded"
+        >
+          {uploadedImages.map((src) => (
+            <option key={src} value={src}>
+              {src.replace("/uploads/", "")}
+            </option>
           ))}
+        </select>
+        <div className="mt-2">
+          <img
+            src={heroData.image}
+            alt="Предпросмотр"
+            className="max-w-xs border rounded shadow"
+          />
         </div>
       </div>
 
@@ -127,7 +125,7 @@ export default function HeroEditor() {
         onClick={handleSave}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
-        💾 Сохранить
+        Сохранить
       </button>
     </div>
   )
