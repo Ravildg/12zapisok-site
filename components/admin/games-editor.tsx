@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 interface Game {
   title: string;
   description: string;
-  players: string; // Оставляем как строку, так как формат "6-12 человек"
+  players: string;
   tags: string;
   image: string;
   link: string;
@@ -24,7 +24,7 @@ const availableImages = [
   "/uploads/logo.png",
 ];
 
-// Начальные данные для игр
+// Начальные данные для игр (предполагается, что это данные с сайта)
 const initialGamesData: Game[] = [
   {
     title: "Коллекционер Игр",
@@ -32,7 +32,7 @@ const initialGamesData: Game[] = [
       "Лондон, туман, ритуальные убийства и исчезнувшие артефакты. Вас ждёт расследование мистического дела в плену у древней игры.",
     players: "6-12 человек",
     tags: "Мистика, Детектив",
-    image: "/uploads/ki2.jpg", // Заменяем на существующее изображение
+    image: "/uploads/ki2.jpg", // Заменил на существующее изображение, так как ki1.jpg отсутствует
     link: "/game/collector",
   },
   {
@@ -76,12 +76,47 @@ const initialGamesData: Game[] = [
 export default function GamesEditor() {
   const [gamesData, setGamesData] = useState<Game[]>(initialGamesData);
 
-  // Проверяем, что мы находимся в браузере, чтобы избежать ошибок с localStorage при SSR
+  // Функция для проверки корректности данных из localStorage
+  const isValidGamesData = (data: any): data is Game[] => {
+    if (!Array.isArray(data) || data.length !== initialGamesData.length) {
+      return false;
+    }
+    return data.every((game) =>
+      game &&
+      typeof game === "object" &&
+      typeof game.title === "string" && game.title.trim() !== "" &&
+      typeof game.description === "string" && game.description.trim() !== "" &&
+      typeof game.players === "string" && game.players.trim() !== "" &&
+      typeof game.tags === "string" && game.tags.trim() !== "" &&
+      typeof game.image === "string" && game.image.trim() !== "" &&
+      typeof game.link === "string" && game.link.trim() !== ""
+    );
+  };
+
+  // Загружаем данные из localStorage при монтировании
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedGames = localStorage.getItem("savedGames");
       if (savedGames) {
-        setGamesData(JSON.parse(savedGames));
+        try {
+          const parsedGames = JSON.parse(savedGames);
+          // Проверяем, что данные корректны (5 игр, все поля заполнены)
+          if (isValidGamesData(parsedGames)) {
+            setGamesData(parsedGames);
+          } else {
+            // Если данные некорректны, используем initialGamesData и перезаписываем localStorage
+            setGamesData(initialGamesData);
+            localStorage.setItem("savedGames", JSON.stringify(initialGamesData));
+          }
+        } catch (error) {
+          console.error("Ошибка при парсинге данных из localStorage:", error);
+          // В случае ошибки также используем initialGamesData
+          setGamesData(initialGamesData);
+          localStorage.setItem("savedGames", JSON.stringify(initialGamesData));
+        }
+      } else {
+        // Если данных в localStorage нет, инициализируем их
+        localStorage.setItem("savedGames", JSON.stringify(initialGamesData));
       }
     }
   }, []);
@@ -163,7 +198,7 @@ export default function GamesEditor() {
             <div className="mb-4">
               <label className="block mb-1">Кол-во игроков</label>
               <input
-                type="text" // Меняем на text, так как это строка
+                type="text"
                 value={game.players}
                 onChange={(e) => handleInputChange(e, "players", index)}
                 className="w-full p-2 border rounded"
