@@ -3,62 +3,88 @@
 import { useState, useEffect } from "react"
 import HeroEditor from "@/components/admin/hero-editor"
 import GalleryEditor from "@/components/admin/gallery-editor"
-import FaqEditor from "@/components/admin/faq-editor"
-import GamesEditor from "@/components/admin/games-editor"
-import PricingEditor from "@/components/admin/pricing-editor"
+import FAQEditor from "@/components/admin/faq-editor"
 import ReviewsEditor from "@/components/admin/reviews-editor"
-import HowItWorksEditor from "@/components/admin/how-it-works-editor"
-import OccasionsEditor from "@/components/admin/occasions-editor"
+import PricingEditor from "@/components/admin/pricing-editor"
 
-const SECTIONS = [
-  { key: "hero", label: "Главная секция", Component: HeroEditor },
-  { key: "gallery", label: "Галерея", Component: GalleryEditor },
-  { key: "faq", label: "Вопросы и ответы", Component: FaqEditor },
-  { key: "games", label: "Игры", Component: GamesEditor },
-  { key: "pricing", label: "Тарифы", Component: PricingEditor },
-  { key: "reviews", label: "Отзывы", Component: ReviewsEditor },
-  { key: "how", label: "Как это работает", Component: HowItWorksEditor },
-  { key: "occasions", label: "Поводы", Component: OccasionsEditor },
+const sections = [
+  { key: "hero", label: "Главная" },
+  { key: "gallery", label: "Галерея" },
+  { key: "faq", label: "Вопросы" },
+  { key: "reviews", label: "Отзывы" },
+  { key: "pricing", label: "Тарифы" },
 ]
 
-export default function AdminPanel() {
+export default function AdminPage() {
   const [activeSection, setActiveSection] = useState("hero")
-  const [authorized, setAuthorized] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [passwordInput, setPasswordInput] = useState("")
 
   useEffect(() => {
-    const pass = prompt("Введите пароль администратора")
-    if (pass === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      setAuthorized(true)
-    } else {
-      alert("Неверный пароль")
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("admin_pass")
+      const realPass = process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+      if (stored === realPass) setIsAuthorized(true)
     }
   }, [])
 
-  if (!authorized) return null
+  const handleLogin = () => {
+    const realPass = process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+    if (passwordInput === realPass) {
+      localStorage.setItem("admin_pass", passwordInput)
+      setIsAuthorized(true)
+    } else {
+      alert("Неверный пароль")
+    }
+  }
 
-  const { Component } = SECTIONS.find((s) => s.key === activeSection) || {}
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
+        <h1 className="text-2xl font-bold mb-4">Авторизация</h1>
+        <input
+          type="password"
+          placeholder="Введите пароль"
+          value={passwordInput}
+          onChange={(e) => setPasswordInput(e.target.value)}
+          className="p-2 border rounded w-full max-w-xs mb-4"
+        />
+        <button
+          onClick={handleLogin}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Войти
+        </button>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 text-black p-4">
+    <div className="min-h-screen bg-gray-100 text-black p-6">
       <h1 className="text-3xl font-bold mb-6">Панель администратора</h1>
-      <nav className="flex gap-2 mb-4 flex-wrap">
-        {SECTIONS.map(({ key, label }) => (
+
+      <div className="flex gap-2 flex-wrap mb-6">
+        {sections.map((section) => (
           <button
-            key={key}
-            onClick={() => setActiveSection(key)}
-            className={`px-4 py-2 rounded text-sm font-semibold ${
-              activeSection === key
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 text-black"
+            key={section.key}
+            onClick={() => setActiveSection(section.key)}
+            className={`px-4 py-2 rounded ${
+              activeSection === section.key
+                ? "bg-blue-600 text-white"
+                : "bg-gray-300"
             }`}
           >
-            {label}
+            {section.label}
           </button>
         ))}
-      </nav>
+      </div>
 
-      <div className="bg-white p-6 rounded-lg shadow">
-        {Component ? <Component /> : <p>Секция не найдена</p>}
+      <div className="bg-white p-6 rounded-lg shadow max-w-3xl">
+        {activeSection === "hero" && <HeroEditor />}
+        {activeSection === "gallery" && <GalleryEditor />}
+        {activeSection === "faq" && <FAQEditor />}
+        {activeSection === "reviews" && <ReviewsEditor />}
+        {activeSection === "pricing" && <PricingEditor />}
       </div>
     </div>
   )
