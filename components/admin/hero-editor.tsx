@@ -9,12 +9,18 @@ type HeroData = {
   image: string
 }
 
-// Список загруженных файлов — названия должны совпадать с тем, что в /public/uploads/
+// Все изображения из public/uploads/
 const availableImages = [
-  "hero1.jpg",
-  "hero2.jpg",
-  "hero3.jpg",
-  "hero4.jpg",
+  "bt1.jpg",
+  "comanda.jpg",
+  "ki2.jpg",
+  "ki3.jpg",
+  "ki4.jpg",
+  "ki5.jpg",
+  "kn1.jpg",
+  "kn2.jpg",
+  "kn3.png",
+  "logo.png",
 ]
 
 const fallbackData: HeroData = {
@@ -22,7 +28,7 @@ const fallbackData: HeroData = {
   subtitle: "Погрузи команду в игру",
   description:
     "Квест-спектакли с живыми актёрами для взрослых. Каждый сюжет — как фильм, в котором вы главные герои. Проведите встречу, которую будут вспоминать.",
-  image: "/uploads/hero1.jpg",
+  image: "/uploads/bt1.jpg",
 }
 
 export default function HeroEditor() {
@@ -111,6 +117,7 @@ export default function HeroEditor() {
                 alt={file}
                 className="w-32 h-20 object-cover rounded"
               />
+              <p className="text-xs text-center mt-1">{file}</p>
             </div>
           ))}
         </div>
