@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 
 type FaqItem = {
   id: string
@@ -11,85 +11,89 @@ type FaqItem = {
 const LOCAL_KEY = "faqData"
 
 export default function FAQEditor() {
-  const [faqs, setFaqs] = useState<FaqItem[]>([])
-  const [question, setQuestion] = useState("")
-  const [answer, setAnswer] = useState("")
+  const [faqList, setFaqList] = useState<FaqItem[]>([])
+  const [newItem, setNewItem] = useState<FaqItem>({
+    id: "",
+    question: "",
+    answer: "",
+  })
 
   useEffect(() => {
     const saved = localStorage.getItem(LOCAL_KEY)
-    if (saved) setFaqs(JSON.parse(saved))
+    if (saved) setFaqList(JSON.parse(saved))
   }, [])
 
-  const handleAdd = () => {
-    if (!question.trim() || !answer.trim()) return
-    const newFaq: FaqItem = {
-      id: Date.now().toString(),
-      question,
-      answer,
-    }
-    setFaqs((prev) => [...prev, newFaq])
-    setQuestion("")
-    setAnswer("")
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setNewItem((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleDelete = (id: string) => {
-    setFaqs((prev) => prev.filter((item) => item.id !== id))
+  const addItem = () => {
+    if (!newItem.question || !newItem.answer) {
+      alert("Заполни вопрос и ответ")
+      return
+    }
+    const item: FaqItem = {
+      ...newItem,
+      id: Date.now().toString(),
+    }
+    setFaqList((prev) => [...prev, item])
+    setNewItem({ id: "", question: "", answer: "" })
+  }
+
+  const deleteItem = (id: string) => {
+    setFaqList((prev) => prev.filter((item) => item.id !== id))
   }
 
   const handleSave = () => {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(faqs))
-    alert("FAQ сохранены!")
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(faqList))
+    alert("Вопросы сохранены!")
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold">Редактор вопросов и ответов</h2>
-
-      <div className="grid gap-2">
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-bold mb-2">Добавить вопрос</h2>
         <input
           type="text"
+          name="question"
+          value={newItem.question}
+          onChange={handleChange}
           placeholder="Вопрос"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full p-2 mb-2 border rounded"
         />
         <textarea
+          name="answer"
+          value={newItem.answer}
+          onChange={handleChange}
           placeholder="Ответ"
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full p-2 mb-2 border rounded"
         />
-        <button
-          onClick={handleAdd}
-          className="bg-green-600 text-white px-4 py-2 rounded w-fit"
-        >
+        <button onClick={addItem} className="bg-green-600 text-white px-4 py-2 rounded">
           ➕ Добавить
         </button>
       </div>
 
-      <ul className="space-y-2">
-        {faqs.map((item) => (
-          <li
-            key={item.id}
-            className="border p-4 rounded shadow-sm relative bg-gray-50"
-          >
-            <strong className="block">{item.question}</strong>
-            <p>{item.answer}</p>
-            <button
-              onClick={() => handleDelete(item.id)}
-              className="absolute top-2 right-2 text-red-600 text-sm"
-            >
-              Удалить
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div>
+        <h2 className="text-xl font-bold mb-2">Список вопросов</h2>
+        <ul className="space-y-3">
+          {faqList.map((item) => (
+            <li key={item.id} className="p-4 border rounded bg-gray-50 relative">
+              <strong>{item.question}</strong>
+              <p className="mt-1">{item.answer}</p>
+              <button
+                onClick={() => deleteItem(item.id)}
+                className="absolute top-2 right-2 text-red-500 text-sm"
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      <button
-        onClick={handleSave}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        💾 Сохранить
+      <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded">
+        💾 Сохранить все вопросы
       </button>
     </div>
   )
