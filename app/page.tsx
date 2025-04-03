@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import HeroEditor from "../components/admin/hero-editor"
-import GalleryEditor from "../components/admin/gallery-editor"
+import HeroEditor from "@/components/admin/hero-editor"
+import GalleryEditor from "@/components/admin/gallery-editor"
 // Импортируй другие редакторы по мере их создания
 
 const sections = [
