@@ -1,30 +1,37 @@
-import Header from "@/components/header"
-import HeroSection from "@/components/hero-section"
-import GamesSection from "@/components/games-section"
-import OccasionsSection from "@/components/occasions-section"
-import HowItWorksSection from "@/components/how-it-works-section"
-import FAQSection from "@/components/faq-section"
-import GallerySection from "@/components/gallery-section"
-import ReviewsSection from "@/components/reviews-section"
-import PricingSection from "@/components/pricing-section"
-import Footer from "@/components/footer"
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import HeroEditor from "@/components/admin/hero-editor"
+// import GalleryEditor from "@/components/admin/gallery-editor" // пока не используем
+
+const sections = [
+  { key: "hero", label: "Главная секция" },
+  // { key: "gallery", label: "Галерея" }, // временно закомментировано
+]
+
+export default function AdminPanel() {
+  const [activeSection, setActiveSection] = useState("hero")
+
   return (
-    <div className="min-h-screen bg-[#0F0A1E] text-white">
-      <div className="fixed inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center opacity-5 pointer-events-none"></div>
-      <Header />
-      <main>
-        <HeroSection />
-        <GamesSection />
-        <OccasionsSection />
-        <HowItWorksSection />
-        <FAQSection />
-        <GallerySection />
-        <ReviewsSection />
-        <PricingSection />
-      </main>
-      <Footer />
+    <div className="min-h-screen bg-gray-100 text-black p-4">
+      <h1 className="text-3xl font-bold mb-6">Панель администратора</h1>
+      <nav className="flex gap-2 mb-4">
+        {sections.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setActiveSection(key)}
+            className={`px-4 py-2 rounded ${
+              activeSection === key ? "bg-blue-500 text-white" : "bg-gray-300"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+      <div className="bg-white p-6 rounded-lg shadow">
+        {activeSection === "hero" && <HeroEditor />}
+        {/* {activeSection === "gallery" && <GalleryEditor />} */}
+      </div>
     </div>
   )
 }
