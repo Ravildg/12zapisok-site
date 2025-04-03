@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 
 type HeroData = {
   title: string
@@ -9,12 +9,20 @@ type HeroData = {
   image: string
 }
 
+// Список загруженных файлов — названия должны совпадать с тем, что в /public/uploads/
+const availableImages = [
+  "hero1.jpg",
+  "hero2.jpg",
+  "hero3.jpg",
+  "hero4.jpg",
+]
+
 const fallbackData: HeroData = {
   title: 'Квест-кафе "12 записок"',
   subtitle: "Погрузи команду в игру",
   description:
     "Квест-спектакли с живыми актёрами для взрослых. Каждый сюжет — как фильм, в котором вы главные герои. Проведите встречу, которую будут вспоминать.",
-  image: "/placeholder.svg",
+  image: "/uploads/hero1.jpg",
 }
 
 export default function HeroEditor() {
@@ -25,18 +33,12 @@ export default function HeroEditor() {
       const saved = localStorage.getItem("heroData")
       if (saved) {
         const parsed = JSON.parse(saved)
-        if (
-          parsed &&
-          typeof parsed === "object" &&
-          parsed.title &&
-          parsed.subtitle &&
-          parsed.description
-        ) {
+        if (parsed && parsed.title && parsed.subtitle && parsed.description) {
           setHeroData(parsed)
         }
       }
-    } catch (error) {
-      console.warn("Ошибка при загрузке heroData:", error)
+    } catch (err) {
+      console.warn("Ошибка загрузки heroData:", err)
     }
   }, [])
 
@@ -47,15 +49,8 @@ export default function HeroEditor() {
     setHeroData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setHeroData((prev) => ({ ...prev, image: reader.result as string }))
-      }
-      reader.readAsDataURL(file)
-    }
+  const handleImageSelect = (fileName: string) => {
+    setHeroData((prev) => ({ ...prev, image: `/uploads/${fileName}` }))
   }
 
   const handleSave = () => {
@@ -100,14 +95,25 @@ export default function HeroEditor() {
 
       <div>
         <label className="block font-semibold mb-1">Изображение</label>
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-        {heroData.image && (
-          <img
-            src={heroData.image}
-            alt="Превью изображения"
-            className="mt-2 w-64 rounded shadow"
-          />
-        )}
+        <div className="flex gap-4 flex-wrap">
+          {availableImages.map((file) => (
+            <div
+              key={file}
+              className={`cursor-pointer border-2 rounded p-1 ${
+                heroData.image === `/uploads/${file}`
+                  ? "border-blue-500"
+                  : "border-transparent"
+              }`}
+              onClick={() => handleImageSelect(file)}
+            >
+              <img
+                src={`/uploads/${file}`}
+                alt={file}
+                className="w-32 h-20 object-cover rounded"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       <button
