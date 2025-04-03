@@ -11,7 +11,7 @@ import OccasionsEditor from "@/components/admin/occasions-editor"
 import HowItWorksEditor from "@/components/admin/how-it-works-editor"
 import FooterInfoEditor from "@/components/admin/footer-info-editor"
 
-const ADMIN_PASSWORD = "1234" // 🛡️ Замени на свой безопасный пароль
+const ADMIN_PASSWORD = "Komanda12" // 🛡️ Замени на свой безопасный пароль
 
 const sections = [
   { key: "hero", label: "Главная секция", Component: HeroEditor },
