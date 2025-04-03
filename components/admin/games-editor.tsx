@@ -12,19 +12,19 @@ interface Game {
 
 // Список доступных изображений для выбора
 const availableImages = [
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/bt1.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/comanda.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki2.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki3.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki4.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki5.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/kn1.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/kn2.jpg",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/kn3.png",
-  "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/logo.png",
+  "/uploads/bt1.jpg",
+  "/uploads/comanda.jpg",
+  "/uploads/ki2.jpg",
+  "/uploads/ki3.jpg",
+  "/uploads/ki4.jpg",
+  "/uploads/ki5.jpg",
+  "/uploads/kn1.jpg",
+  "/uploads/kn2.jpg",
+  "/uploads/kn3.png",
+  "/uploads/logo.png",
 ];
 
-// Начальные данные для игр
+// Начальные данные для игр (предполагается, что это данные с сайта)
 const initialGamesData: Game[] = [
   {
     title: "Коллекционер Игр",
@@ -32,7 +32,7 @@ const initialGamesData: Game[] = [
       "Лондон, туман, ритуальные убийства и исчезнувшие артефакты. Вас ждёт расследование мистического дела в плену у древней игры.",
     players: "6-12 человек",
     tags: "Мистика, Детектив",
-    image: "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki1.jpg",
+    image: "/uploads/ki2.jpg",
     link: "/game/collector",
   },
   {
@@ -41,7 +41,7 @@ const initialGamesData: Game[] = [
       "Остров, на котором всё не так. Странные события, весёлое безумие и комедия на грани фантастики.",
     players: "8-15 человек",
     tags: "Комедия, Фантастика",
-    image: "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki2.jpg",
+    image: "/uploads/ki2.jpg",
     link: "/game/bermuda",
   },
   {
@@ -50,7 +50,7 @@ const initialGamesData: Game[] = [
       "Сигары, виски и рулетка. Гангстерские интриги в атмосфере подпольного казино тридцатых.",
     players: "10-20 человек",
     tags: "Гангстеры, Казино",
-    image: "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki3.jpg",
+    image: "/uploads/ki3.jpg",
     link: "/game/new-york-clans",
   },
   {
@@ -59,7 +59,7 @@ const initialGamesData: Game[] = [
       "Механизмы, алхимия и свет во тьме. Вернитесь назад в будущее и раскройте тайну волшебной хижины.",
     players: "6-12 человек",
     tags: "Стимпанк, Головоломки",
-    image: "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki4.jpg",
+    image: "/uploads/ki4.jpg",
     link: "/game/time-loop",
   },
   {
@@ -68,54 +68,106 @@ const initialGamesData: Game[] = [
       "Послевоенный рейс — к новой надежде. Яхта, документы, драгоценности — и каждый пассажир не тот, за кого себя выдает.",
     players: "8-16 человек",
     tags: "Детектив, Интриги",
-    image: "https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/ki5.jpg",
+    image: "/uploads/ki5.jpg",
     link: "/game/yacht",
   },
-  // Добавьте другие игры по аналогии
 ];
 
 export default function GamesEditor() {
   const [gamesData, setGamesData] = useState<Game[]>(initialGamesData);
 
-  // Сохраняем игры в localStorage
+  // Функция для проверки корректности данных из localStorage
+  const isValidGamesData = (data: any): data is Game[] => {
+    if (!Array.isArray(data) || data.length !== initialGamesData.length) {
+      return false;
+    }
+    return data.every(
+      (game) =>
+        game &&
+        typeof game === "object" &&
+        typeof game.title === "string" &&
+        game.title.trim() !== "" &&
+        typeof game.description === "string" &&
+        game.description.trim() !== "" &&
+        typeof game.players === "string" &&
+        game.players.trim() !== "" &&
+        typeof game.tags === "string" &&
+        game.tags.trim() !== "" &&
+        typeof game.image === "string" &&
+        game.image.trim() !== "" &&
+        typeof game.link === "string" &&
+        game.link.trim() !== ""
+    );
+  };
+
+  // Загружаем данные из localStorage при монтировании
   useEffect(() => {
-    const savedGames = localStorage.getItem("savedGames");
-    if (savedGames) {
-      setGamesData(JSON.parse(savedGames));
+    if (typeof window !== "undefined") {
+      const savedGames = localStorage.getItem("savedGames");
+      if (savedGames) {
+        try {
+          const parsedGames = JSON.parse(savedGames);
+          if (isValidGamesData(parsedGames)) {
+            setGamesData(parsedGames);
+          } else {
+            setGamesData(initialGamesData);
+            localStorage.setItem("savedGames", JSON.stringify(initialGamesData));
+          }
+        } catch (error) {
+          console.error("Ошибка при парсинге данных из localStorage:", error);
+          setGamesData(initialGamesData);
+          localStorage.setItem("savedGames", JSON.stringify(initialGamesData));
+        }
+      } else {
+        localStorage.setItem("savedGames", JSON.stringify(initialGamesData));
+      }
     }
   }, []);
 
+  // Обработчик изменения текстовых полей
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: keyof Game,
     index: number
   ) => {
     const { value } = e.target;
-    const updatedGames = [...gamesData];
-    updatedGames[index] = {
-      ...updatedGames[index],
-      [field]: value,
-    };
-    setGamesData(updatedGames);
+    setGamesData((prevGames) => {
+      const updatedGames = [...prevGames];
+      updatedGames[index] = {
+        ...updatedGames[index],
+        [field]: value,
+      };
+      return updatedGames;
+    });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
+  // Обработчик изменения изображения
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    index: number
+  ) => {
     const selectedImage = e.target.value;
-    const updatedGames = [...gamesData];
-    updatedGames[index] = {
-      ...updatedGames[index],
-      image: selectedImage,
-    };
-    setGamesData(updatedGames);
+    setGamesData((prevGames) => {
+      const updatedGames = [...prevGames];
+      updatedGames[index] = {
+        ...updatedGames[index],
+        image: selectedImage,
+      };
+      return updatedGames;
+    });
   };
 
+  // Обработчик сохранения для каждой игры
   const handleSave = (index: number) => {
-    const updatedGames = [...gamesData];
-    updatedGames[index] = {
-      ...updatedGames[index],
-    };
-    setGamesData(updatedGames);
-    localStorage.setItem("savedGames", JSON.stringify(updatedGames));
+    if (typeof window !== "undefined") {
+      const updatedGames = [...gamesData];
+      updatedGames[index] = { ...updatedGames[index] };
+      setGamesData(updatedGames);
+      localStorage.setItem("savedGames", JSON.stringify(updatedGames));
+      // Уведомляем сайт об изменении
+      window.dispatchEvent(new Event("gamesDataUpdated"));
+      alert(`Игра "${updatedGames[index].title}" успешно сохранена!`);
+    }
   };
 
   return (
@@ -125,89 +177,86 @@ export default function GamesEditor() {
       {/* Список игр с формами для редактирования */}
       <div className="games-list grid grid-cols-1 gap-6">
         {gamesData.map((game, index) => (
-          <div key={index} className="game-card bg-white p-4 rounded-lg shadow-md">
+          <div
+            key={index}
+            className="game-card bg-white p-4 rounded-lg shadow-md"
+          >
             <h3 className="text-xl font-semibold mb-2">{game.title}</h3>
 
-            {/* Поле для редактирования названия игры */}
-            <div>
-              <label>Название</label>
+            <div className="mb-4">
+              <label className="block mb-1">Название</label>
               <input
                 type="text"
                 value={game.title}
                 onChange={(e) => handleInputChange(e, "title", index)}
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-2 border rounded"
               />
             </div>
 
-            {/* Поле для редактирования описания игры */}
-            <div>
-              <label>Описание</label>
+            <div className="mb-4">
+              <label className="block mb-1">Описание</label>
               <textarea
                 value={game.description}
                 onChange={(e) => handleInputChange(e, "description", index)}
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-2 border rounded"
+                rows={3}
               />
             </div>
 
-            {/* Поле для редактирования количества игроков */}
-            <div>
-              <label>Кол-во игроков</label>
+            <div className="mb-4">
+              <label className="block mb-1">Кол-во игроков</label>
               <input
-                type="number"
+                type="text"
                 value={game.players}
-                min="2"
                 onChange={(e) => handleInputChange(e, "players", index)}
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-2 border rounded"
               />
             </div>
 
-            {/* Поле для редактирования тегов */}
-            <div>
-              <label>Теги</label>
+            <div className="mb-4">
+              <label className="block mb-1">Теги</label>
               <input
                 type="text"
                 value={game.tags}
                 onChange={(e) => handleInputChange(e, "tags", index)}
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-2 border rounded"
               />
             </div>
 
-            {/* Поле для редактирования ссылки на игру */}
-            <div>
-              <label>Ссылка на игру</label>
+            <div className="mb-4">
+              <label className="block mb-1">Ссылка на игру</label>
               <input
                 type="text"
                 value={game.link}
                 onChange={(e) => handleInputChange(e, "link", index)}
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-2 border rounded"
               />
             </div>
 
-            {/* Поле для выбора изображения */}
-            <div>
-              <label>Изображение</label>
+            <div className="mb-4">
+              <label className="block mb-1">Изображение</label>
               <select
                 value={game.image}
                 onChange={(e) => handleImageChange(e, index)}
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-2 border rounded mb-2"
               >
                 {availableImages.map((image, idx) => (
                   <option key={idx} value={image}>
-                    {image.replace("https://raw.githubusercontent.com/Ravildg/12zapisok-site/main/public/uploads/", "")}
+                    {image.replace("/uploads/", "")}
                   </option>
                 ))}
               </select>
               <img
                 src={game.image}
-                alt="game image"
+                alt={game.title}
                 className="mt-2 w-32 h-32 object-cover rounded"
               />
             </div>
 
-            {/* Кнопка сохранения изменений для игры */}
+            {/* Кнопка сохранения для каждой игры */}
             <button
               onClick={() => handleSave(index)}
-              className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
+              className="bg-blue-600 text-white px-4 py-2 rounded mt-4 hover:bg-blue-700"
             >
               Сохранить игру
             </button>
