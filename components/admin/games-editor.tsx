@@ -1,164 +1,203 @@
-"use client"
+import React, { useState, useEffect } from "react";
 
-import { useState, useEffect } from "react"
-
-type Game = {
-  id: number
-  title: string
-  description: string
-  image: string
-  players: string
-  tags: string
-  link: string
+interface Game {
+  title: string;
+  description: string;
+  players: string;
+  tags: string;
+  image: string;
+  link: string;
 }
 
-const uploadedImages = [
-  "/uploads/bt1.jpg",
-  "/uploads/comanda.jpg",
-  "/uploads/ki2.jpg",
-  "/uploads/ki3.jpg",
-  "/uploads/ki4.jpg",
-  "/uploads/ki5.jpg",
-  "/uploads/kn1.jpg",
-  "/uploads/kn2.jpg",
-  "/uploads/kn3.png",
-  "/uploads/logo.png",
-]
+const initialGamesData: Game[] = [
+  {
+    title: "Коллекционер Игр",
+    description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
+    players: "2-4",
+    tags: "мистика, детектив",
+    image: "/uploads/kids.jpg",
+    link: "/game/collector",
+  },
+  {
+    title: "Петля времени",
+    description: "Путешествие во времени, алхимия и загадочная хижина.",
+    players: "2-4",
+    tags: "путешествия, фантастика",
+    image: "/uploads/bt1.jpg",
+    link: "/game/time-loop",
+  },
+  // Дополните это данные для других игр.
+];
 
 export default function GamesEditor() {
-  const [games, setGames] = useState<Game[]>([])
+  const [gamesData, setGamesData] = useState<Game[]>([]);
+  const [newGame, setNewGame] = useState<Game>({
+    title: "",
+    description: "",
+    players: "",
+    tags: "",
+    image: "",
+    link: "",
+  });
 
   useEffect(() => {
-    const savedGames = localStorage.getItem("gamesData")
-    console.log("savedGames:", savedGames)  // Отладка
+    // Получаем данные из localStorage, если они есть
+    const savedGames = localStorage.getItem("savedGames");
     if (savedGames) {
-      setGames(JSON.parse(savedGames))
+      setGamesData(JSON.parse(savedGames));
     } else {
-      console.log("No saved data, using default games.")  // Отладка
-      setGames([
-        {
-          id: 1,
-          title: "Коллекционер Игр",
-          description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
-          image: "/uploads/kn1.jpg",
-          players: "2–6 игроков",
-          tags: "детектив, мистика",
-          link: "https://12zapisok.ru/games/collector",
-        },
-        {
-          id: 2,
-          title: "Бермудский Треугольник",
-          description: "Фантастическая комедия на таинственном острове.",
-          image: "/uploads/kn2.jpg",
-          players: "3–8 игроков",
-          tags: "комедия, приключения",
-          link: "https://12zapisok.ru/games/bermuda",
-        },
-        // Add more default games if necessary
-      ])
+      setGamesData(initialGamesData);
     }
-  }, [])
+  }, []);
 
-  const handleChange = (
-    index: number,
-    field: keyof Game,
-    value: string | number
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: keyof Game
   ) => {
-    const updatedGames = [...games]
-    updatedGames[index][field] = value
-    setGames(updatedGames)
-    console.log("Updated games:", updatedGames)  // Отладка
-  }
+    const { value } = e.target;
+    setNewGame((prevGame) => ({
+      ...prevGame,
+      [field]: value,
+    }));
+  };
 
-  const handleImageSelect = (index: number, value: string) => {
-    const updatedGames = [...games]
-    updatedGames[index].image = value
-    setGames(updatedGames)
-    console.log("Image updated:", value)  // Отладка
-  }
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewGame((prevGame) => ({
+          ...prevGame,
+          image: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSave = () => {
-    localStorage.setItem("gamesData", JSON.stringify(games))
-    alert("Игры сохранены!")
-    console.log("Games saved:", games)  // Отладка
-  }
+    const updatedGamesData = [...gamesData, newGame];
+    setGamesData(updatedGamesData);
+    localStorage.setItem("savedGames", JSON.stringify(updatedGamesData));
+  };
+
+  const handleGameSave = (gameIndex: number) => {
+    const updatedGamesData = [...gamesData];
+    updatedGamesData[gameIndex] = newGame;
+    setGamesData(updatedGamesData);
+    localStorage.setItem("savedGames", JSON.stringify(updatedGamesData));
+  };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Редактирование раздела «Игры»</h2>
-
-      {games.map((game, index) => (
-        <div key={game.id} className="p-4 border rounded shadow bg-white space-y-2">
-          <h3 className="font-bold text-lg">Игра: {game.title}</h3>
-
-          <input
-            type="text"
-            value={game.title}
-            onChange={(e) => handleChange(index, "title", e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Название игры"
-          />
-
-          <textarea
-            value={game.description}
-            onChange={(e) => handleChange(index, "description", e.target.value)}
-            className="w-full p-2 border rounded"
-            rows={3}
-            placeholder="Описание игры"
-          />
-
-          <input
-            type="text"
-            value={game.players}
-            onChange={(e) => handleChange(index, "players", e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Количество игроков"
-          />
-
-          <input
-            type="text"
-            value={game.tags}
-            onChange={(e) => handleChange(index, "tags", e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Теги"
-          />
-
-          <input
-            type="text"
-            value={game.link}
-            onChange={(e) => handleChange(index, "link", e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Ссылка на подробности"
-          />
-
+    <div className="games-editor">
+      <h2>Редактировать игры</h2>
+      {gamesData.map((game, index) => (
+        <div key={index} className="game-card">
+          <h3>Игра: {game.title}</h3>
           <div>
-            <label className="block mb-1">Изображение</label>
-            <select
-              value={game.image}
-              onChange={(e) => handleImageSelect(index, e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              {uploadedImages.map((src) => (
-                <option key={src} value={src}>
-                  {src.replace("/uploads/", "")}
-                </option>
-              ))}
-            </select>
-            <img
-              src={game.image}
-              alt="Game preview"
-              className="mt-2 w-48 h-32 object-cover rounded"
+            <label>Название</label>
+            <input
+              type="text"
+              value={newGame.title || game.title}
+              onChange={(e) => handleInputChange(e, "title")}
             />
           </div>
+          <div>
+            <label>Описание</label>
+            <textarea
+              value={newGame.description || game.description}
+              onChange={(e) => handleInputChange(e, "description")}
+            />
+          </div>
+          <div>
+            <label>Кол-во игроков</label>
+            <input
+              type="text"
+              value={newGame.players || game.players}
+              onChange={(e) => handleInputChange(e, "players")}
+            />
+          </div>
+          <div>
+            <label>Теги</label>
+            <input
+              type="text"
+              value={newGame.tags || game.tags}
+              onChange={(e) => handleInputChange(e, "tags")}
+            />
+          </div>
+          <div>
+            <label>Ссылка на игру</label>
+            <input
+              type="text"
+              value={newGame.link || game.link}
+              onChange={(e) => handleInputChange(e, "link")}
+            />
+          </div>
+          <div>
+            <label>Изображение</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            <img src={newGame.image || game.image} alt="game image" />
+          </div>
+          <button onClick={() => handleGameSave(index)}>Сохранить игру</button>
         </div>
       ))}
 
-      <button
-        onClick={handleSave}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Сохранить
-      </button>
+      <div>
+        <h3>Добавить новую игру</h3>
+        <div>
+          <label>Название</label>
+          <input
+            type="text"
+            value={newGame.title}
+            onChange={(e) => handleInputChange(e, "title")}
+          />
+        </div>
+        <div>
+          <label>Описание</label>
+          <textarea
+            value={newGame.description}
+            onChange={(e) => handleInputChange(e, "description")}
+          />
+        </div>
+        <div>
+          <label>Кол-во игроков</label>
+          <input
+            type="text"
+            value={newGame.players}
+            onChange={(e) => handleInputChange(e, "players")}
+          />
+        </div>
+        <div>
+          <label>Теги</label>
+          <input
+            type="text"
+            value={newGame.tags}
+            onChange={(e) => handleInputChange(e, "tags")}
+          />
+        </div>
+        <div>
+          <label>Ссылка на игру</label>
+          <input
+            type="text"
+            value={newGame.link}
+            onChange={(e) => handleInputChange(e, "link")}
+          />
+        </div>
+        <div>
+          <label>Изображение</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          <img src={newGame.image} alt="game image" />
+        </div>
+        <button onClick={handleSave}>Добавить игру</button>
+      </div>
     </div>
-  )
+  );
 }
