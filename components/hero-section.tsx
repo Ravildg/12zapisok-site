@@ -1,20 +1,57 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ChevronRight, Sparkles } from "lucide-react"
 
+type HeroData = {
+  title: string
+  subtitle: string
+  description: string
+  image: string
+}
+
+const fallbackData: HeroData = {
+  title: 'Квест-кафе "12 записок"',
+  subtitle: "Погрузи команду в игру",
+  description:
+    "Квест-спектакли с живыми актёрами для взрослых. Каждый сюжет — как фильм, в котором вы главные герои. Проведите встречу, которую будут вспоминать.",
+  image: "/placeholder.svg",
+}
+
 export default function HeroSection() {
+  const [heroData, setHeroData] = useState<HeroData>(fallbackData)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("heroData")
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        // подстраховка на случай битых данных
+        setHeroData({
+          title: parsed.title || fallbackData.title,
+          subtitle: parsed.subtitle || fallbackData.subtitle,
+          description: parsed.description || fallbackData.description,
+          image: parsed.image || fallbackData.image,
+        })
+      }
+    } catch (err) {
+      console.error("Ошибка загрузки heroData:", err)
+      setHeroData(fallbackData)
+    }
+  }, [])
+
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-      {/* Background with overlay */}
       <div
-        className="absolute inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: "url('/placeholder.svg?height=1080&width=1920')",
+          backgroundImage: `url('${heroData.image}')`,
           filter: "brightness(0.4)",
         }}
       />
 
-      {/* Animated particles */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(20)].map((_, i) => (
           <div
@@ -32,7 +69,6 @@ export default function HeroSection() {
         ))}
       </div>
 
-      {/* Decorative elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0F0A1E]/70 via-[#0F0A1E]/40 to-[#0F0A1E]" />
 
       <div className="container relative mx-auto px-4 z-10">
@@ -44,17 +80,24 @@ export default function HeroSection() {
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Квест-кафе{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
-              "12 записок"
-            </span>
+            {heroData.title.includes("12 записок") ? (
+              <>
+                Квест-кафе{" "}
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+                  "12 записок"
+                </span>
+              </>
+            ) : (
+              heroData.title
+            )}
           </h1>
 
-          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-purple-300">Погрузи команду в игру</h2>
+          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-purple-300">
+            {heroData.subtitle}
+          </h2>
 
           <p className="text-lg md:text-xl text-zinc-300 mb-8 max-w-2xl mx-auto">
-            Квест-спектакли с живыми актёрами для взрослых. Каждый сюжет — как фильм, в котором вы главные герои.
-            Проведите встречу, которую будут вспоминать.
+            {heroData.description}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -78,9 +121,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Decorative element */}
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0F0A1E] to-transparent" />
     </section>
   )
 }
-
