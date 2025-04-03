@@ -1,8 +1,9 @@
 "use client"
 
-import HeroEditor from "@/components/admin/HeroEditor"
-import GamesEditor from "@/components/admin/GamesEditor"
-import OccasionsEditor from "@/components/admin/OccasionsEditor"
+import HeroEditor from "@/components/admin/hero-editor"
+import GamesEditor from "@/components/admin/games-editor"
+import OccasionsEditor from "@/components/admin/occasions-editor"
+
 
 export default function AdminPage() {
   return (
