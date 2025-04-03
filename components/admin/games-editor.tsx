@@ -9,13 +9,25 @@ interface Game {
   link: string;
 }
 
+const availableImages = [
+  "/uploads/bt1.jpg",
+  "/uploads/ki2.jpg",
+  "/uploads/ki3.jpg",
+  "/uploads/ki4.jpg",
+  "/uploads/ki5.jpg",
+  "/uploads/kn1.jpg",
+  "/uploads/kn2.jpg",
+  "/uploads/kn3.png",
+  "/uploads/logo.png",
+];
+
 const initialGamesData: Game[] = [
   {
     title: "Коллекционер Игр",
     description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
     players: "2-4",
     tags: "мистика, детектив",
-    image: "/uploads/kids.jpg",
+    image: "/uploads/ki1.jpg",
     link: "/game/collector",
   },
   {
@@ -26,7 +38,7 @@ const initialGamesData: Game[] = [
     image: "/uploads/bt1.jpg",
     link: "/game/time-loop",
   },
-  // Дополните это данные для других игр.
+  // Дополните данные для других игр
 ];
 
 export default function GamesEditor() {
@@ -41,7 +53,6 @@ export default function GamesEditor() {
   });
 
   useEffect(() => {
-    // Получаем данные из localStorage, если они есть
     const savedGames = localStorage.getItem("savedGames");
     if (savedGames) {
       setGamesData(JSON.parse(savedGames));
@@ -61,18 +72,12 @@ export default function GamesEditor() {
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewGame((prevGame) => ({
-          ...prevGame,
-          image: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedImage = e.target.value;
+    setNewGame((prevGame) => ({
+      ...prevGame,
+      image: selectedImage,
+    }));
   };
 
   const handleSave = () => {
@@ -135,11 +140,16 @@ export default function GamesEditor() {
           </div>
           <div>
             <label>Изображение</label>
-            <input
-              type="file"
-              accept="image/*"
+            <select
+              value={newGame.image || game.image}
               onChange={handleImageChange}
-            />
+            >
+              {availableImages.map((image, idx) => (
+                <option key={idx} value={image}>
+                  {image}
+                </option>
+              ))}
+            </select>
             <img src={newGame.image || game.image} alt="game image" />
           </div>
           <button onClick={() => handleGameSave(index)}>Сохранить игру</button>
@@ -189,11 +199,16 @@ export default function GamesEditor() {
         </div>
         <div>
           <label>Изображение</label>
-          <input
-            type="file"
-            accept="image/*"
+          <select
+            value={newGame.image}
             onChange={handleImageChange}
-          />
+          >
+            {availableImages.map((image, idx) => (
+              <option key={idx} value={image}>
+                {image}
+              </option>
+            ))}
+          </select>
           <img src={newGame.image} alt="game image" />
         </div>
         <button onClick={handleSave}>Добавить игру</button>
