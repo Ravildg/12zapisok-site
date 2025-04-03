@@ -11,39 +11,37 @@ const DEFAULT_DATA = {
   image: "/uploads/bt1.jpg",
 }
 
-// Все изображения, которые ты загрузил на GitHub в /public/uploads
+// Список актуальных изображений из GitHub /public/uploads
 const availableImages = [
+  "/uploads/bt0.jpg",
   "/uploads/bt1.jpg",
-  "/uploads/bt2.jpg",
-  "/uploads/comanda.jpg",
-  "/uploads/ki1.jpg",
+  "/uploads/bt12.jpg",
+  "/uploads/bt5.jpg",
+  "/uploads/bt6.jpg",
+  "/uploads/bt7.jpg",
+  "/uploads/ki0.jpg",
   "/uploads/ki2.jpg",
   "/uploads/ki3.jpg",
   "/uploads/ki4.jpg",
   "/uploads/ki5.jpg",
   "/uploads/ki6.jpg",
-  "/uploads/ki7.jpg",
-  "/uploads/ki8.jpg",
-  "/uploads/ki9.jpg",
-  "/uploads/ki10.jpg",
-  "/uploads/ki11.jpg",
-  "/uploads/ki12.jpg",
   "/uploads/kn1.jpg",
+  "/uploads/kn10.jpg",
   "/uploads/kn2.jpg",
   "/uploads/kn3.png",
+  "/uploads/kn6.jpg",
+  "/uploads/kn7.jpg",
+  "/uploads/kn8.jpg",
+  "/uploads/kn9.jpg",
   "/uploads/logo.png",
-  "/uploads/m1.jpg",
-  "/uploads/m2.jpg",
-  "/uploads/p1.jpg",
-  "/uploads/p2.jpg",
-  "/uploads/p3.jpg",
-  "/uploads/p4.jpg",
-  "/uploads/p5.jpg",
-  "/uploads/p6.jpg",
-  "/uploads/p7.jpg",
-  "/uploads/p8.jpg",
-  "/uploads/p9.jpg",
-  "/uploads/p10.jpg",
+  "/uploads/pv10.jpg",
+  "/uploads/pv11.jpg",
+  "/uploads/pv3.jpg",
+  "/uploads/pv4.jpg",
+  "/uploads/pv5.jpg",
+  "/uploads/pv6.jpg",
+  "/uploads/rn10.jpg",
+  "/uploads/rn9.jpg",
 ]
 
 export default function HeroEditor() {
@@ -76,7 +74,7 @@ export default function HeroEditor() {
       <h2 className="text-xl font-semibold mb-2">Редактирование главной секции</h2>
 
       <div>
-        <label className="block font-medium mb-1">Бейдж (маленький текст над заголовком)</label>
+        <label className="block font-medium mb-1">Бейдж (текст над заголовком)</label>
         <input
           type="text"
           name="badge"
