@@ -11,33 +11,8 @@ const DEFAULT_DATA = {
   image: "/uploads/bt1.jpg",
 }
 
-export default function HeroEditor() {
-  const [heroData, setHeroData] = useState(DEFAULT_DATA)
-
-  useEffect(() => {
-    const saved = localStorage.getItem("heroData")
-    if (saved) setHeroData(JSON.parse(saved))
-  }, [])
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target
-    setHeroData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleImageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value
-    setHeroData((prev) => ({ ...prev, image: value }))
-  }
-
-  const handleSave = () => {
-    localStorage.setItem("heroData", JSON.stringify(heroData))
-    alert("Главная секция сохранена!")
-  }
-
-  // список файлов, загруженных в /public/uploads (ручной список из скриншота)
-  const availableImages = [
+// Все изображения, которые ты загрузил на GitHub в /public/uploads
+const availableImages = [
   "/uploads/bt1.jpg",
   "/uploads/bt2.jpg",
   "/uploads/comanda.jpg",
@@ -71,6 +46,30 @@ export default function HeroEditor() {
   "/uploads/p10.jpg",
 ]
 
+export default function HeroEditor() {
+  const [heroData, setHeroData] = useState(DEFAULT_DATA)
+
+  useEffect(() => {
+    const saved = localStorage.getItem("heroData")
+    if (saved) setHeroData(JSON.parse(saved))
+  }, [])
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setHeroData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    setHeroData((prev) => ({ ...prev, image: value }))
+  }
+
+  const handleSave = () => {
+    localStorage.setItem("heroData", JSON.stringify(heroData))
+    alert("Главная секция сохранена!")
+  }
 
   return (
     <div className="space-y-4">
@@ -128,7 +127,7 @@ export default function HeroEditor() {
           onChange={handleImageSelect}
           className="w-full p-2 border rounded"
         >
-          {uploadedImages.map((src) => (
+          {availableImages.map((src) => (
             <option key={src} value={src}>
               {src.replace("/uploads/", "")}
             </option>
