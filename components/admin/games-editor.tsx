@@ -97,7 +97,6 @@ export default function GamesEditor() {
       [field]: value,
     };
     setGamesData(updatedGames);
-    localStorage.setItem("savedGames", JSON.stringify(updatedGames));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
@@ -108,7 +107,6 @@ export default function GamesEditor() {
       image: selectedImage,
     };
     setGamesData(updatedGames);
-    localStorage.setItem("savedGames", JSON.stringify(updatedGames));
   };
 
   const handleSave = (index: number) => {
@@ -116,12 +114,6 @@ export default function GamesEditor() {
     updatedGames[index] = {
       ...updatedGames[index],
     };
-    setGamesData(updatedGames);
-    localStorage.setItem("savedGames", JSON.stringify(updatedGames));
-  };
-
-  const handleRemoveGame = (index: number) => {
-    const updatedGames = gamesData.filter((_, i) => i !== index);
     setGamesData(updatedGames);
     localStorage.setItem("savedGames", JSON.stringify(updatedGames));
   };
@@ -218,14 +210,6 @@ export default function GamesEditor() {
               className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
             >
               Сохранить игру
-            </button>
-
-            {/* Кнопка для удаления игры */}
-            <button
-              onClick={() => handleRemoveGame(index)}
-              className="bg-red-600 text-white px-4 py-2 rounded mt-2"
-            >
-              Удалить игру
             </button>
           </div>
         ))}
