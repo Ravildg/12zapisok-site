@@ -21,9 +21,22 @@ export default function HeroEditor() {
   const [heroData, setHeroData] = useState<HeroData>(fallbackData)
 
   useEffect(() => {
-    const savedData = localStorage.getItem("heroData")
-    if (savedData) {
-      setHeroData(JSON.parse(savedData))
+    try {
+      const saved = localStorage.getItem("heroData")
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (
+          parsed &&
+          typeof parsed === "object" &&
+          parsed.title &&
+          parsed.subtitle &&
+          parsed.description
+        ) {
+          setHeroData(parsed)
+        }
+      }
+    } catch (error) {
+      console.warn("Ошибка при загрузке heroData:", error)
     }
   }, [])
 
@@ -31,7 +44,7 @@ export default function HeroEditor() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setHeroData((prevData) => ({ ...prevData, [name]: value }))
+    setHeroData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,8 +52,7 @@ export default function HeroEditor() {
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
-        const result = reader.result as string
-        setHeroData((prevData) => ({ ...prevData, image: result }))
+        setHeroData((prev) => ({ ...prev, image: reader.result as string }))
       }
       reader.readAsDataURL(file)
     }
@@ -54,40 +66,40 @@ export default function HeroEditor() {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block mb-1 font-semibold">Заголовок</label>
+        <label className="block font-semibold mb-1">Заголовок</label>
         <input
           type="text"
           name="title"
           value={heroData.title}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full border p-2 rounded"
         />
       </div>
 
       <div>
-        <label className="block mb-1 font-semibold">Подзаголовок</label>
+        <label className="block font-semibold mb-1">Подзаголовок</label>
         <input
           type="text"
           name="subtitle"
           value={heroData.subtitle}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full border p-2 rounded"
         />
       </div>
 
       <div>
-        <label className="block mb-1 font-semibold">Описание</label>
+        <label className="block font-semibold mb-1">Описание</label>
         <textarea
           name="description"
           value={heroData.description}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full border p-2 rounded"
           rows={4}
         />
       </div>
 
       <div>
-        <label className="block mb-1 font-semibold">Изображение</label>
+        <label className="block font-semibold mb-1">Изображение</label>
         <input type="file" accept="image/*" onChange={handleImageUpload} />
         {heroData.image && (
           <img
@@ -102,7 +114,7 @@ export default function HeroEditor() {
         onClick={handleSave}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
-        Сохранить
+        💾 Сохранить
       </button>
     </div>
   )
