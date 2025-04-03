@@ -8,40 +8,19 @@ interface Occasion {
   image: string
 }
 
-// 🔁 Список загруженных изображений
 const availableImages = [
-  "/uploads/bt0.jpg",
-  "/uploads/bt1.jpg",
-  "/uploads/bt12.jpg",
-  "/uploads/bt5.jpg",
-  "/uploads/bt6.jpg",
-  "/uploads/bt7.jpg",
-  "/uploads/ki0.jpg",
-  "/uploads/ki2.jpg",
-  "/uploads/ki3.jpg",
-  "/uploads/ki4.jpg",
-  "/uploads/ki5.jpg",
-  "/uploads/ki6.jpg",
-  "/uploads/kn1.jpg",
-  "/uploads/kn10.jpg",
-  "/uploads/kn2.jpg",
-  "/uploads/kn3.png",
-  "/uploads/kn6.jpg",
-  "/uploads/kn7.jpg",
-  "/uploads/kn8.jpg",
-  "/uploads/kn9.jpg",
-  "/uploads/logo.png",
-  "/uploads/pv10.jpg",
-  "/uploads/pv11.jpg",
-  "/uploads/pv3.jpg",
-  "/uploads/pv4.jpg",
-  "/uploads/pv5.jpg",
-  "/uploads/pv6.jpg",
-  "/uploads/rn10.jpg",
-  "/uploads/rn9.jpg",
+  "/uploads/bt0.jpg", "/uploads/bt1.jpg", "/uploads/bt12.jpg",
+  "/uploads/bt5.jpg", "/uploads/bt6.jpg", "/uploads/bt7.jpg",
+  "/uploads/ki0.jpg", "/uploads/ki2.jpg", "/uploads/ki3.jpg",
+  "/uploads/ki4.jpg", "/uploads/ki5.jpg", "/uploads/ki6.jpg",
+  "/uploads/kn1.jpg", "/uploads/kn10.jpg", "/uploads/kn2.jpg",
+  "/uploads/kn3.png", "/uploads/kn6.jpg", "/uploads/kn7.jpg",
+  "/uploads/kn8.jpg", "/uploads/kn9.jpg", "/uploads/logo.png",
+  "/uploads/pv10.jpg", "/uploads/pv11.jpg", "/uploads/pv3.jpg",
+  "/uploads/pv4.jpg", "/uploads/pv5.jpg", "/uploads/pv6.jpg",
+  "/uploads/rn10.jpg", "/uploads/rn9.jpg",
 ]
 
-// 🎯 Исходные данные
 const defaultOccasions: Occasion[] = [
   {
     title: "День рождения",
@@ -77,11 +56,6 @@ export default function OccasionsEditor() {
     }
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem("occasionsData", JSON.stringify(occasions))
-    window.dispatchEvent(new Event("occasionsUpdated"))
-  }, [occasions])
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
     index: number,
@@ -91,6 +65,12 @@ export default function OccasionsEditor() {
     const updated = [...occasions]
     updated[index] = { ...updated[index], [field]: value }
     setOccasions(updated)
+  }
+
+  const handleSave = () => {
+    localStorage.setItem("occasionsData", JSON.stringify(occasions))
+    window.dispatchEvent(new Event("occasionsUpdated"))
+    alert("Поводы сохранены!")
   }
 
   return (
@@ -144,6 +124,13 @@ export default function OccasionsEditor() {
           </div>
         </div>
       ))}
+
+      <button
+        onClick={handleSave}
+        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+      >
+        Сохранить поводы
+      </button>
     </div>
   )
 }
