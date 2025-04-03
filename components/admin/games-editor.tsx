@@ -131,7 +131,7 @@ export default function GamesEditor() {
       <h2 className="text-2xl font-bold mb-4">Редактировать игры</h2>
 
       {/* Список игр с формами для редактирования */}
-      <div className="games-list grid gap-6">
+      <div className="games-list grid grid-cols-1 gap-6">
         {gamesData.map((game, index) => (
           <div key={index} className="game-card bg-white p-4 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold mb-2">{game.title}</h3>
