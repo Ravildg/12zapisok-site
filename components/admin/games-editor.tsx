@@ -2,110 +2,155 @@
 
 import { useState, useEffect } from "react"
 
-type GameData = {
+type Game = {
+  id: number
+  title: string
+  description: string
   image: string
   players: string
   tags: string
-  description: string
   link: string
 }
 
+const uploadedImages = [
+  "/uploads/bt1.jpg",
+  "/uploads/comanda.jpg",
+  "/uploads/ki2.jpg",
+  "/uploads/ki3.jpg",
+  "/uploads/ki4.jpg",
+  "/uploads/ki5.jpg",
+  "/uploads/kn1.jpg",
+  "/uploads/kn2.jpg",
+  "/uploads/kn3.png",
+  "/uploads/logo.png",
+]
+
 export default function GamesEditor() {
-  const [gamesData, setGamesData] = useState<GameData>({
-    image: "/uploads/ki2.jpg",
-    players: "2–6 игроков",
-    tags: "детектив, мистика",
-    description: "Мистическая история с загадками и тайнами. Подходит для команды, которая любит разгадывать сюжеты.",
-    link: "https://12zapisok.ru/games/detail", // Пример ссылки
-  })
+  const [games, setGames] = useState<Game[]>([])
 
   useEffect(() => {
-    const saved = localStorage.getItem("gamesData")
-    if (saved) {
-      setGamesData(JSON.parse(saved))
+    const savedGames = localStorage.getItem("gamesData")
+    if (savedGames) {
+      setGames(JSON.parse(savedGames))
+    } else {
+      setGames([
+        {
+          id: 1,
+          title: "Коллекционер Игр",
+          description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
+          image: "/uploads/kn1.jpg",
+          players: "2–6 игроков",
+          tags: "детектив, мистика",
+          link: "https://12zapisok.ru/games/collector",
+        },
+        {
+          id: 2,
+          title: "Бермудский Треугольник",
+          description: "Фантастическая комедия на таинственном острове.",
+          image: "/uploads/kn2.jpg",
+          players: "3–8 игроков",
+          tags: "комедия, приключения",
+          link: "https://12zapisok.ru/games/bermuda",
+        },
+        // Add more default games if necessary
+      ])
     }
   }, [])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setGamesData((prev) => ({ ...prev, [name]: value }))
+  const handleChange = (
+    index: number,
+    field: keyof Game,
+    value: string | number
+  ) => {
+    const updatedGames = [...games]
+    updatedGames[index][field] = value
+    setGames(updatedGames)
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const imagePath = `/uploads/${file.name}`
-      setGamesData((prev) => ({ ...prev, image: imagePath }))
-    }
+  const handleImageSelect = (index: number, value: string) => {
+    const updatedGames = [...games]
+    updatedGames[index].image = value
+    setGames(updatedGames)
   }
 
   const handleSave = () => {
-    localStorage.setItem("gamesData", JSON.stringify(gamesData))
-    alert("Раздел 'Игры' успешно обновлён.")
+    localStorage.setItem("gamesData", JSON.stringify(games))
+    alert("Игры сохранены!")
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Редактор раздела "Игры"</h2>
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold">Редактирование раздела «Игры»</h2>
 
-      <div>
-        <label className="block font-medium mb-1">Изображение (путь: /public/uploads/...)</label>
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-        {gamesData.image && (
-          <div className="mt-2">
-            <img src={gamesData.image} alt="Превью" className="h-32 rounded shadow" />
-            <p className="text-sm text-gray-500">{gamesData.image}</p>
+      {games.map((game, index) => (
+        <div key={game.id} className="p-4 border rounded shadow bg-white space-y-2">
+          <h3 className="font-bold text-lg">Игра: {game.title}</h3>
+
+          <input
+            type="text"
+            value={game.title}
+            onChange={(e) => handleChange(index, "title", e.target.value)}
+            className="w-full p-2 border rounded"
+            placeholder="Название игры"
+          />
+
+          <textarea
+            value={game.description}
+            onChange={(e) => handleChange(index, "description", e.target.value)}
+            className="w-full p-2 border rounded"
+            rows={3}
+            placeholder="Описание игры"
+          />
+
+          <input
+            type="text"
+            value={game.players}
+            onChange={(e) => handleChange(index, "players", e.target.value)}
+            className="w-full p-2 border rounded"
+            placeholder="Количество игроков"
+          />
+
+          <input
+            type="text"
+            value={game.tags}
+            onChange={(e) => handleChange(index, "tags", e.target.value)}
+            className="w-full p-2 border rounded"
+            placeholder="Теги"
+          />
+
+          <input
+            type="text"
+            value={game.link}
+            onChange={(e) => handleChange(index, "link", e.target.value)}
+            className="w-full p-2 border rounded"
+            placeholder="Ссылка на подробности"
+          />
+
+          <div>
+            <label className="block mb-1">Изображение</label>
+            <select
+              value={game.image}
+              onChange={(e) => handleImageSelect(index, e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              {uploadedImages.map((src) => (
+                <option key={src} value={src}>
+                  {src.replace("/uploads/", "")}
+                </option>
+              ))}
+            </select>
+            <img
+              src={game.image}
+              alt="Game preview"
+              className="mt-2 w-48 h-32 object-cover rounded"
+            />
           </div>
-        )}
-      </div>
-
-      <div>
-        <label className="block font-medium mb-1">Количество игроков</label>
-        <input
-          type="text"
-          name="players"
-          value={gamesData.players}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
-      </div>
-
-      <div>
-        <label className="block font-medium mb-1">Теги</label>
-        <input
-          type="text"
-          name="tags"
-          value={gamesData.tags}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
-      </div>
-
-      <div>
-        <label className="block font-medium mb-1">Описание</label>
-        <textarea
-          name="description"
-          value={gamesData.description}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          rows={3}
-        />
-      </div>
-
-      <div>
-        <label className="block font-medium mb-1">Ссылка на подробности</label>
-        <input
-          type="text"
-          name="link"
-          value={gamesData.link}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
-      </div>
+        </div>
+      ))}
 
       <button
         onClick={handleSave}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Сохранить
       </button>
