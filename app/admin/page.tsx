@@ -18,7 +18,7 @@ const sections: { key: SectionKey; label: string }[] = [
   { key: "games", label: "Игры" },
   { key: "occasions", label: "Поводы" },
   { key: "howItWorks", label: "Как это работает" },
-  { key: "faq", label: "Вопросы и ответы" },
+  { key: "faq", label: "Вопросы" },
   { key: "gallery", label: "Галерея" },
   { key: "reviews", label: "Отзывы" },
   { key: "pricing", label: "Тарифы" },
@@ -33,32 +33,82 @@ type SectionData = {
 
 export default function AdminPage() {
   const [active, setActive] = useState<SectionKey>("hero")
-  const [data, setData] = useState<Record<SectionKey, SectionData>>({
-    hero: defaultData("Главная секция"),
-    games: defaultData("Игры"),
-    occasions: defaultData("Поводы"),
-    howItWorks: defaultData("Как это работает"),
-    faq: defaultData("FAQ"),
-    gallery: defaultData("Галерея"),
-    reviews: defaultData("Отзывы"),
-    pricing: defaultData("Тарифы"),
+  const [data, setData] = useState<Record<SectionKey, SectionData>>(() => {
+    const saved = localStorage.getItem("adminData")
+    if (saved) return JSON.parse(saved)
+
+    // Инициализация с дефолтами
+    return {
+      hero: defaultData("hero"),
+      games: defaultData("games"),
+      occasions: defaultData("occasions"),
+      howItWorks: defaultData("howItWorks"),
+      faq: defaultData("faq"),
+      gallery: defaultData("gallery"),
+      reviews: defaultData("reviews"),
+      pricing: defaultData("pricing"),
+    }
   })
 
-  function defaultData(title: string): SectionData {
-    return {
-      title,
-      subtitle: "",
-      description: "",
-      image: "",
+  function defaultData(key: SectionKey): SectionData {
+    const defaults: Record<SectionKey, SectionData> = {
+      hero: {
+        title: 'Квест-кафе "12 записок"',
+        subtitle: "Погрузи команду в игру",
+        description:
+          "Квест-спектакли с живыми актёрами для взрослых. Каждый сюжет — как фильм, в котором вы главные герои. Проведите встречу, которую будут вспоминать.",
+        image: "/placeholder.svg",
+      },
+      games: {
+        title: "Выберите игру",
+        subtitle: "У нас 8 разных сюжетов",
+        description: "Каждая игра — отдельный мир. Выберите тот, в который хочется нырнуть.",
+        image: "/placeholder.svg",
+      },
+      occasions: {
+        title: "Когда хочется большего, чем просто встреча.",
+        subtitle: "",
+        description:
+          "Погрузитесь в историю, которую будете вспоминать всей командой. Квест-спектакль легко впишется в любой повод и сделает его особенным:\n— День рождения или юбилей, где вы — герои сюжета\n— Корпоратив, который объединит сильнее, чем тренинг\n— Вечер с друзьями, превращённый в приключение.",
+        image: "/placeholder.svg",
+      },
+      howItWorks: {
+        title: "Как это работает",
+        subtitle: "",
+        description:
+          "Выбираете сюжет, оставляете заявку, и мы подбираем актёров, адаптируем сценарий под ваш формат, и проводим игру от начала до финала. Вы — в центре событий.",
+        image: "/placeholder.svg",
+      },
+      faq: {
+        title: "Часто задаваемые вопросы",
+        subtitle: "",
+        description:
+          "Здесь мы собрали ответы на самые популярные вопросы гостей о формате, участии и организации.",
+        image: "/placeholder.svg",
+      },
+      gallery: {
+        title: "Галерея",
+        subtitle: "",
+        description: "Кадры с прошедших игр — эмоции, атмосфера, переживания гостей.",
+        image: "/placeholder.svg",
+      },
+      reviews: {
+        title: "Отзывы",
+        subtitle: "",
+        description: "Вот что говорят участники наших квест-спектаклей:",
+        image: "/placeholder.svg",
+      },
+      pricing: {
+        title: "Тарифы",
+        subtitle: "",
+        description:
+          "Мы предложим лучший вариант под ваш запрос. Цена зависит от количества участников и формата.",
+        image: "/placeholder.svg",
+      },
     }
-  }
 
-  useEffect(() => {
-    const saved = localStorage.getItem("adminData")
-    if (saved) {
-      setData(JSON.parse(saved))
-    }
-  }, [])
+    return defaults[key]
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -140,7 +190,7 @@ export default function AdminPage() {
             name="description"
             value={current.description}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded min-h-[100px]"
           />
         </div>
         <div>
