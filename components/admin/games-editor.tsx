@@ -1,118 +1,111 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 
-type Game = {
-  title: string
-  description: string
+type GameData = {
   image: string
+  players: string
+  tags: string
+  description: string
+  link: string
 }
 
-const DEFAULT_GAMES: Game[] = [
-  {
-    title: "Коллекционер Игр",
-    description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
-    image: "/uploads/kn1.jpg",
-  },
-  {
-    title: "Бермудский Треугольник",
-    description: "Фантастическая комедия на таинственном острове.",
-    image: "/uploads/kn2.jpg",
-  },
-  {
-    title: "Кланы Нью-Йорка",
-    description: "Гангстерская вечеринка с казино и интригами.",
-    image: "/uploads/kn3.png",
-  },
-  {
-    title: "Петля Времени",
-    description: "Путешествие во времени, алхимия и загадочная хижина.",
-    image: "/uploads/ki3.jpg",
-  },
-  {
-    title: "Яхта",
-    description: "Исторический триллер на послевоенной яхте с шпионажем и драгоценностями.",
-    image: "/uploads/ki4.jpg",
-  },
-]
-
-const uploadedImages = [
-  "/uploads/bt1.jpg",
-  "/uploads/comanda.jpg",
-  "/uploads/ki2.jpg",
-  "/uploads/ki3.jpg",
-  "/uploads/ki4.jpg",
-  "/uploads/ki5.jpg",
-  "/uploads/kn1.jpg",
-  "/uploads/kn2.jpg",
-  "/uploads/kn3.png",
-  "/uploads/logo.png",
-]
-
 export default function GamesEditor() {
-  const [games, setGames] = useState<Game[]>(DEFAULT_GAMES)
+  const [gamesData, setGamesData] = useState<GameData>({
+    image: "/uploads/ki2.jpg",
+    players: "2–6 игроков",
+    tags: "детектив, мистика",
+    description: "Мистическая история с загадками и тайнами. Подходит для команды, которая любит разгадывать сюжеты.",
+    link: "https://12zapisok.ru/games/detail", // Пример ссылки
+  })
 
   useEffect(() => {
     const saved = localStorage.getItem("gamesData")
-    if (saved) setGames(JSON.parse(saved))
+    if (saved) {
+      setGamesData(JSON.parse(saved))
+    }
   }, [])
 
-  const handleChange = (index: number, field: keyof Game, value: string) => {
-    const updated = [...games]
-    updated[index][field] = value
-    setGames(updated)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setGamesData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const imagePath = `/uploads/${file.name}`
+      setGamesData((prev) => ({ ...prev, image: imagePath }))
+    }
   }
 
   const handleSave = () => {
-    localStorage.setItem("gamesData", JSON.stringify(games))
-    alert("Игры сохранены!")
+    localStorage.setItem("gamesData", JSON.stringify(gamesData))
+    alert("Раздел 'Игры' успешно обновлён.")
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Редактирование раздела «Игры»</h2>
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold">Редактор раздела "Игры"</h2>
 
-      {games.map((game, index) => (
-        <div key={index} className="p-4 border rounded shadow bg-white space-y-2">
-          <h3 className="font-bold text-lg">Игра {index + 1}</h3>
-
-          <input
-            type="text"
-            value={game.title}
-            onChange={(e) => handleChange(index, "title", e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Название"
-          />
-
-          <textarea
-            value={game.description}
-            onChange={(e) => handleChange(index, "description", e.target.value)}
-            className="w-full p-2 border rounded"
-            rows={3}
-            placeholder="Описание"
-          />
-
-          <div>
-            <label className="block mb-1">Изображение</label>
-            <select
-              value={game.image}
-              onChange={(e) => handleChange(index, "image", e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              {uploadedImages.map((src) => (
-                <option key={src} value={src}>
-                  {src.replace("/uploads/", "")}
-                </option>
-              ))}
-            </select>
-            <img src={game.image} alt="game preview" className="mt-2 max-w-xs rounded border" />
+      <div>
+        <label className="block font-medium mb-1">Изображение (путь: /public/uploads/...)</label>
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
+        {gamesData.image && (
+          <div className="mt-2">
+            <img src={gamesData.image} alt="Превью" className="h-32 rounded shadow" />
+            <p className="text-sm text-gray-500">{gamesData.image}</p>
           </div>
-        </div>
-      ))}
+        )}
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Количество игроков</label>
+        <input
+          type="text"
+          name="players"
+          value={gamesData.players}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Теги</label>
+        <input
+          type="text"
+          name="tags"
+          value={gamesData.tags}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Описание</label>
+        <textarea
+          name="description"
+          value={gamesData.description}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+          rows={3}
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Ссылка на подробности</label>
+        <input
+          type="text"
+          name="link"
+          value={gamesData.link}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+        />
+      </div>
 
       <button
         onClick={handleSave}
-        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
         Сохранить
       </button>
