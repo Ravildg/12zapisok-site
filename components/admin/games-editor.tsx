@@ -30,9 +30,11 @@ export default function GamesEditor() {
 
   useEffect(() => {
     const savedGames = localStorage.getItem("gamesData")
+    console.log("savedGames:", savedGames)  // Отладка
     if (savedGames) {
       setGames(JSON.parse(savedGames))
     } else {
+      console.log("No saved data, using default games.")  // Отладка
       setGames([
         {
           id: 1,
@@ -65,17 +67,20 @@ export default function GamesEditor() {
     const updatedGames = [...games]
     updatedGames[index][field] = value
     setGames(updatedGames)
+    console.log("Updated games:", updatedGames)  // Отладка
   }
 
   const handleImageSelect = (index: number, value: string) => {
     const updatedGames = [...games]
     updatedGames[index].image = value
     setGames(updatedGames)
+    console.log("Image updated:", value)  // Отладка
   }
 
   const handleSave = () => {
     localStorage.setItem("gamesData", JSON.stringify(games))
     alert("Игры сохранены!")
+    console.log("Games saved:", games)  // Отладка
   }
 
   return (
