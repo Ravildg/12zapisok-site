@@ -1,4 +1,4 @@
-i"use client"
+"use client"
 
 import { useState } from "react"
 import HeroEditor from "../components/admin/hero-editor"
