@@ -1,14 +1,30 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { ArrowRight, Clock, Users } from "lucide-react"
 
-const games = [
+// Тип игры
+interface Game {
+  id: number
+  title: string
+  description: string
+  players: string
+  tags: string | string[]
+  image: string
+  duration: string
+  link?: string
+}
+
+// Запасной список игр (на случай если localStorage пустой или битый)
+const fallbackGames: Game[] = [
   {
     id: 1,
     title: "Коллекционер Игр",
     description:
       "Лондон, туман, ритуальные убийства и исчезнувшие артефакты. Вас ждёт расследование мистического дела в плену у древней игры.",
-    image: "/placeholder.svg?height=400&width=600",
+    image: "/uploads/ki2.jpg",
     duration: "2 часа",
     players: "6-12 человек",
     tags: ["Мистика", "Детектив"],
@@ -17,7 +33,7 @@ const games = [
     id: 2,
     title: "Бермудский Треугольник",
     description: "Остров, на котором всё не так. Странные события, весёлое безумие и комедия на грани фантастики.",
-    image: "/placeholder.svg?height=400&width=600",
+    image: "/uploads/ki2.jpg",
     duration: "1.5 часа",
     players: "8-15 человек",
     tags: ["Комедия", "Фантастика"],
@@ -26,7 +42,7 @@ const games = [
     id: 3,
     title: "Кланы Нью-Йорка",
     description: "Сигары, виски и рулетка. Гангстерские интриги в атмосфере подпольного казино тридцатых.",
-    image: "/placeholder.svg?height=400&width=600",
+    image: "/uploads/ki3.jpg",
     duration: "2 часа",
     players: "10-20 человек",
     tags: ["Гангстеры", "Интриги"],
@@ -35,7 +51,7 @@ const games = [
     id: 4,
     title: "Петля Времени",
     description: "Механизмы, алхимия и свет во тьме. Вернитесь назад в будущее и раскройте тайну волшебной хижины.",
-    image: "/placeholder.svg?height=400&width=600",
+    image: "/uploads/ki4.jpg",
     duration: "2 часа",
     players: "6-12 человек",
     tags: ["Стимпанк", "Головоломки"],
@@ -45,7 +61,7 @@ const games = [
     title: "Яхта",
     description:
       "Послевоенный рейс — к новой надежде. Яхта, документы, драгоценности — и каждый пассажир не тот, за кого себя выдаёт.",
-    image: "/placeholder.svg?height=400&width=600",
+    image: "/uploads/ki5.jpg",
     duration: "2.5 часа",
     players: "8-16 человек",
     tags: ["Детектив", "Интриги"],
@@ -53,9 +69,32 @@ const games = [
 ]
 
 export default function GamesSection() {
+  const [games, setGames] = useState<Game[]>(fallbackGames)
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("savedGames")
+      if (saved) {
+        try {
+          const parsed: Game[] = JSON.parse(saved)
+          // Убедимся, что у каждой игры есть id
+          const enriched = parsed.map((g, i) => ({
+            ...g,
+            id: i + 1,
+            tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t) => t.trim()),
+            duration: g.duration || "2 часа", // если вдруг не добавили поле в редакторе
+          }))
+          setGames(enriched)
+        } catch (e) {
+          console.warn("Ошибка при парсинге savedGames, используем запасной список", e)
+        }
+      }
+    }
+  }, [])
+
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative">
-      {/* Decorative elements */}
+      {/* Декоративные линии */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30"></div>
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30"></div>
 
@@ -88,7 +127,7 @@ export default function GamesSection() {
               <div className="p-6 md:w-2/3 flex flex-col justify-between">
                 <div>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {game.tags.map((tag, index) => (
+                    {(game.tags as string[]).map((tag, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 text-xs rounded-full bg-purple-900/30 text-purple-300 border border-purple-500/20"
@@ -99,7 +138,6 @@ export default function GamesSection() {
                   </div>
 
                   <h3 className="text-2xl font-bold mb-2 text-white">{game.title}</h3>
-
                   <p className="text-zinc-300 mb-4">{game.description}</p>
 
                   <div className="flex flex-wrap gap-4 mb-4">
@@ -130,4 +168,3 @@ export default function GamesSection() {
     </section>
   )
 }
-
