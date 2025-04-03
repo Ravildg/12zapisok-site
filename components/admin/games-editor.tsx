@@ -93,70 +93,79 @@ export default function GamesEditor() {
     localStorage.setItem("savedGames", JSON.stringify(updatedGamesData));
   };
 
+  const handleRemoveGame = (gameIndex: number) => {
+    const updatedGamesData = gamesData.filter((_, index) => index !== gameIndex);
+    setGamesData(updatedGamesData);
+    localStorage.setItem("savedGames", JSON.stringify(updatedGamesData));
+  };
+
   return (
     <div className="games-editor">
       <h2>Редактировать игры</h2>
-      {gamesData.map((game, index) => (
-        <div key={index} className="game-card">
-          <h3>Игра: {game.title}</h3>
-          <div>
-            <label>Название</label>
-            <input
-              type="text"
-              value={newGame.title || game.title}
-              onChange={(e) => handleInputChange(e, "title")}
-            />
+      <div className="games-list">
+        {gamesData.map((game, index) => (
+          <div key={index} className="game-card">
+            <h3>Игра: {game.title}</h3>
+            <div>
+              <label>Название</label>
+              <input
+                type="text"
+                value={newGame.title || game.title}
+                onChange={(e) => handleInputChange(e, "title")}
+              />
+            </div>
+            <div>
+              <label>Описание</label>
+              <textarea
+                value={newGame.description || game.description}
+                onChange={(e) => handleInputChange(e, "description")}
+              />
+            </div>
+            <div>
+              <label>Кол-во игроков</label>
+              <input
+                type="text"
+                value={newGame.players || game.players}
+                onChange={(e) => handleInputChange(e, "players")}
+              />
+            </div>
+            <div>
+              <label>Теги</label>
+              <input
+                type="text"
+                value={newGame.tags || game.tags}
+                onChange={(e) => handleInputChange(e, "tags")}
+              />
+            </div>
+            <div>
+              <label>Ссылка на игру</label>
+              <input
+                type="text"
+                value={newGame.link || game.link}
+                onChange={(e) => handleInputChange(e, "link")}
+              />
+            </div>
+            <div>
+              <label>Изображение</label>
+              <select
+                value={newGame.image || game.image}
+                onChange={handleImageChange}
+              >
+                {availableImages.map((image, idx) => (
+                  <option key={idx} value={image}>
+                    {image}
+                  </option>
+                ))}
+              </select>
+              <img src={newGame.image || game.image} alt="game image" />
+            </div>
+            <button onClick={() => handleGameSave(index)}>Сохранить игру</button>
+            <button onClick={() => handleRemoveGame(index)}>Удалить игру</button>
           </div>
-          <div>
-            <label>Описание</label>
-            <textarea
-              value={newGame.description || game.description}
-              onChange={(e) => handleInputChange(e, "description")}
-            />
-          </div>
-          <div>
-            <label>Кол-во игроков</label>
-            <input
-              type="text"
-              value={newGame.players || game.players}
-              onChange={(e) => handleInputChange(e, "players")}
-            />
-          </div>
-          <div>
-            <label>Теги</label>
-            <input
-              type="text"
-              value={newGame.tags || game.tags}
-              onChange={(e) => handleInputChange(e, "tags")}
-            />
-          </div>
-          <div>
-            <label>Ссылка на игру</label>
-            <input
-              type="text"
-              value={newGame.link || game.link}
-              onChange={(e) => handleInputChange(e, "link")}
-            />
-          </div>
-          <div>
-            <label>Изображение</label>
-            <select
-              value={newGame.image || game.image}
-              onChange={handleImageChange}
-            >
-              {availableImages.map((image, idx) => (
-                <option key={idx} value={image}>
-                  {image}
-                </option>
-              ))}
-            </select>
-            <img src={newGame.image || game.image} alt="game image" />
-          </div>
-          <button onClick={() => handleGameSave(index)}>Сохранить игру</button>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      <div>
+      <div className="new-game-form">
         <h3>Добавить новую игру</h3>
         <div>
           <label>Название</label>
