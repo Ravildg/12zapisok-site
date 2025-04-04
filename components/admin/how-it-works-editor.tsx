@@ -10,22 +10,21 @@ interface HowItWorksData {
   image: string
 }
 
-// 💾 Актуальный список изображений
 const availableImages = [
-  "/uploads/bt1.jpg",
-  "/uploads/comanda.jpg",
-  "/uploads/ki2.jpg",
-  "/uploads/ki3.jpg",
-  "/uploads/ki4.jpg",
-  "/uploads/ki5.jpg",
-  "/uploads/kn1.jpg",
-  "/uploads/kn2.jpg",
-  "/uploads/kn3.png",
-  "/uploads/logo.png",
-  "/uploads/pv1.jpg",
-  "/uploads/яхта.jpg",
-  "/uploads/povod1.png",
-]
+  "bt1.jpg",
+  "comanda.jpg",
+  "ki2.jpg",
+  "ki3.jpg",
+  "ki4.jpg",
+  "ki5.jpg",
+  "kn1.jpg",
+  "kn2.jpg",
+  "kn3.png",
+  "logo.png",
+  "pv1.jpg",
+  "яхта.jpg",
+  "povod1.png",
+].map((name) => `/uploads/${name}`)
 
 const defaultData: HowItWorksData = {
   title: "Организуем под ключ — ярко, чётко, без хлопот",
@@ -62,7 +61,7 @@ export default function HowItWorksEditor() {
   }
 
   const addStep = () => {
-    setData({ ...data, steps: [...data.steps, ""] })
+    setData({ ...data, steps: [...data.steps, "Новый шаг"] })
   }
 
   const removeStep = (index: number) => {
