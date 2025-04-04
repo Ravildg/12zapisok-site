@@ -2,87 +2,116 @@
 
 import { useEffect, useState } from "react"
 
-type Step = {
+interface HowItWorksData {
   title: string
-  description: string
+  subtitle: string
+  steps: string[]
+  buttonText: string
+  image: string
+}
+
+const availableImages = [
+  "/uploads/btn1.jpg",
+  "/uploads/btn2.jpg",
+  "/uploads/btn3.jpg",
+  "/uploads/ki2.jpg",
+  "/uploads/bt5.jpg",
+]
+
+const defaultData: HowItWorksData = {
+  title: "Организуем под ключ — ярко, чётко, без хлопот",
+  subtitle: "",
+  steps: [
+    "Выберите сюжет",
+    "Мы подготовим всё необходимое",
+    "Погрузитесь в приключение",
+  ],
+  buttonText: "Оставить заявку",
+  image: "/uploads/btn1.jpg",
 }
 
 export default function HowItWorksEditor() {
-  const [steps, setSteps] = useState<Step[]>([])
+  const [data, setData] = useState<HowItWorksData>(defaultData)
 
   useEffect(() => {
     const saved = localStorage.getItem("howItWorksData")
-    if (saved) {
-      setSteps(JSON.parse(saved))
-    } else {
-      setSteps([
-        {
-          title: "Вы выбираете сюжет",
-          description: "Из восьми ярких историй с актёрами.",
-        },
-        {
-          title: "Мы адаптируем сценарий",
-          description: "Под возраст, интересы и площадку.",
-        },
-        {
-          title: "Играем!",
-          description: "Вы — герои, а мы ведём за кулисами.",
-        },
-      ])
-    }
+    if (saved) setData(JSON.parse(saved))
   }, [])
 
-  const handleChange = (index: number, field: keyof Step, value: string) => {
-    const updated = [...steps]
-    updated[index][field] = value
-    setSteps(updated)
-  }
-
-  const addStep = () => {
-    setSteps([...steps, { title: "", description: "" }])
-  }
-
-  const removeStep = (index: number) => {
-    const updated = [...steps]
-    updated.splice(index, 1)
-    setSteps(updated)
-  }
-
   const handleSave = () => {
-    localStorage.setItem("howItWorksData", JSON.stringify(steps))
-    alert("Раздел «Как это работает» сохранён!")
+    localStorage.setItem("howItWorksData", JSON.stringify(data))
+    alert("Сохранено!")
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-semibold">Редактор: Как это работает</h2>
-      {steps.map((step, index) => (
-        <div key={index} className="border p-4 rounded bg-white shadow space-y-2">
+    <div className="p-4 space-y-4">
+      <h1 className="text-xl font-bold">Редактор раздела "Как это работает"</h1>
+
+      <label className="block">
+        Заголовок:
+        <input
+          className="w-full p-2 rounded bg-gray-800 text-white mt-1"
+          value={data.title}
+          onChange={(e) => setData({ ...data, title: e.target.value })}
+        />
+      </label>
+
+      <label className="block">
+        Подзаголовок:
+        <input
+          className="w-full p-2 rounded bg-gray-800 text-white mt-1"
+          value={data.subtitle}
+          onChange={(e) => setData({ ...data, subtitle: e.target.value })}
+        />
+      </label>
+
+      <div>
+        <h2 className="font-semibold mt-4 mb-2">Шаги:</h2>
+        {data.steps.map((step, index) => (
           <input
-            type="text"
-            placeholder="Заголовок шага"
-            value={step.title}
-            onChange={(e) => handleChange(index, "title", e.target.value)}
-            className="w-full border p-2 rounded"
+            key={index}
+            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
+            value={step}
+            onChange={(e) => {
+              const updatedSteps = [...data.steps]
+              updatedSteps[index] = e.target.value
+              setData({ ...data, steps: updatedSteps })
+            }}
           />
-          <textarea
-            placeholder="Описание шага"
-            value={step.description}
-            onChange={(e) => handleChange(index, "description", e.target.value)}
-            className="w-full border p-2 rounded"
-          />
-          <button
-            onClick={() => removeStep(index)}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            Удалить шаг
-          </button>
+        ))}
+      </div>
+
+      <label className="block">
+        Текст кнопки:
+        <input
+          className="w-full p-2 rounded bg-gray-800 text-white mt-1"
+          value={data.buttonText}
+          onChange={(e) => setData({ ...data, buttonText: e.target.value })}
+        />
+      </label>
+
+      <div>
+        <h2 className="font-semibold mt-4 mb-2">Изображение справа:</h2>
+        <select
+          className="p-2 rounded bg-gray-800 text-white"
+          value={data.image}
+          onChange={(e) => setData({ ...data, image: e.target.value })}
+        >
+          {availableImages.map((img) => (
+            <option key={img} value={img}>
+              {img}
+            </option>
+          ))}
+        </select>
+        <div className="mt-2">
+          <img src={data.image} alt="preview" className="w-64 h-auto rounded" />
         </div>
-      ))}
-      <button onClick={addStep} className="bg-blue-500 text-white px-4 py-2 rounded">
-        ➕ Добавить шаг
-      </button>
-      <button onClick={handleSave} className="bg-green-600 text-white px-6 py-2 rounded ml-2">
+      </div>
+
+      <button
+        onClick={handleSave}
+        className="mt-4 px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+      >
         💾 Сохранить
       </button>
     </div>
