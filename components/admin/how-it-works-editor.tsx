@@ -10,12 +10,21 @@ interface HowItWorksData {
   image: string
 }
 
+// 💾 Актуальный список изображений
 const availableImages = [
-  "/uploads/btn1.jpg",
-  "/uploads/btn2.jpg",
-  "/uploads/btn3.jpg",
+  "/uploads/bt1.jpg",
+  "/uploads/comanda.jpg",
   "/uploads/ki2.jpg",
-  "/uploads/bt5.jpg",
+  "/uploads/ki3.jpg",
+  "/uploads/ki4.jpg",
+  "/uploads/ki5.jpg",
+  "/uploads/kn1.jpg",
+  "/uploads/kn2.jpg",
+  "/uploads/kn3.png",
+  "/uploads/logo.png",
+  "/uploads/pv1.jpg",
+  "/uploads/яхта.jpg",
+  "/uploads/povod1.png",
 ]
 
 const defaultData: HowItWorksData = {
@@ -27,7 +36,7 @@ const defaultData: HowItWorksData = {
     "Погрузитесь в приключение",
   ],
   buttonText: "Оставить заявку",
-  image: "/uploads/btn1.jpg",
+  image: "/uploads/bt1.jpg",
 }
 
 export default function HowItWorksEditor() {
@@ -35,22 +44,41 @@ export default function HowItWorksEditor() {
 
   useEffect(() => {
     const saved = localStorage.getItem("howItWorksData")
-    if (saved) setData(JSON.parse(saved))
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        if (parsed && typeof parsed === "object" && parsed.steps?.length) {
+          setData(parsed)
+        }
+      } catch (e) {
+        console.error("Ошибка парсинга данных:", e)
+      }
+    }
   }, [])
 
   const handleSave = () => {
     localStorage.setItem("howItWorksData", JSON.stringify(data))
-    alert("Сохранено!")
+    alert("Раздел сохранён!")
+  }
+
+  const addStep = () => {
+    setData({ ...data, steps: [...data.steps, ""] })
+  }
+
+  const removeStep = (index: number) => {
+    const updatedSteps = [...data.steps]
+    updatedSteps.splice(index, 1)
+    setData({ ...data, steps: updatedSteps })
   }
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold">Редактор раздела "Как это работает"</h1>
+      <h1 className="text-xl font-bold mb-4">Редактор "Как это работает"</h1>
 
       <label className="block">
         Заголовок:
         <input
-          className="w-full p-2 rounded bg-gray-800 text-white mt-1"
+          className="w-full p-2 rounded bg-zinc-800 text-white mt-1"
           value={data.title}
           onChange={(e) => setData({ ...data, title: e.target.value })}
         />
@@ -59,7 +87,7 @@ export default function HowItWorksEditor() {
       <label className="block">
         Подзаголовок:
         <input
-          className="w-full p-2 rounded bg-gray-800 text-white mt-1"
+          className="w-full p-2 rounded bg-zinc-800 text-white mt-1"
           value={data.subtitle}
           onChange={(e) => setData({ ...data, subtitle: e.target.value })}
         />
@@ -68,51 +96,67 @@ export default function HowItWorksEditor() {
       <div>
         <h2 className="font-semibold mt-4 mb-2">Шаги:</h2>
         {data.steps.map((step, index) => (
-          <input
-            key={index}
-            className="w-full p-2 mb-2 rounded bg-gray-800 text-white"
-            value={step}
-            onChange={(e) => {
-              const updatedSteps = [...data.steps]
-              updatedSteps[index] = e.target.value
-              setData({ ...data, steps: updatedSteps })
-            }}
-          />
+          <div key={index} className="flex items-center space-x-2 mb-2">
+            <input
+              className="flex-1 p-2 rounded bg-zinc-800 text-white"
+              value={step}
+              onChange={(e) => {
+                const updated = [...data.steps]
+                updated[index] = e.target.value
+                setData({ ...data, steps: updated })
+              }}
+            />
+            <button
+              onClick={() => removeStep(index)}
+              className="text-red-400 hover:text-red-600"
+              title="Удалить шаг"
+            >
+              ✕
+            </button>
+          </div>
         ))}
+        <button
+          onClick={addStep}
+          className="px-3 py-1 mt-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          ➕ Добавить шаг
+        </button>
       </div>
 
       <label className="block">
         Текст кнопки:
         <input
-          className="w-full p-2 rounded bg-gray-800 text-white mt-1"
+          className="w-full p-2 rounded bg-zinc-800 text-white mt-1"
           value={data.buttonText}
           onChange={(e) => setData({ ...data, buttonText: e.target.value })}
         />
       </label>
 
-      <div>
-        <h2 className="font-semibold mt-4 mb-2">Изображение справа:</h2>
+      <div className="mt-4">
+        <label className="block mb-1 font-semibold">Изображение:</label>
         <select
-          className="p-2 rounded bg-gray-800 text-white"
           value={data.image}
           onChange={(e) => setData({ ...data, image: e.target.value })}
+          className="w-full p-2 bg-zinc-800 text-white rounded"
         >
-          {availableImages.map((img) => (
-            <option key={img} value={img}>
-              {img}
+          {availableImages.map((src) => (
+            <option key={src} value={src}>
+              {src.replace("/uploads/", "")}
             </option>
           ))}
         </select>
-        <div className="mt-2">
-          <img src={data.image} alt="preview" className="w-64 h-auto rounded" />
-        </div>
+        <img
+          src={data.image}
+          alt="preview"
+          className="mt-2 w-64 h-auto rounded border"
+        />
       </div>
 
       <button
         onClick={handleSave}
-        className="mt-4 px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+        className="mt-6 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
       >
-        💾 Сохранить
+        💾 Сохранить изменения
       </button>
     </div>
   )
