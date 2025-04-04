@@ -4,7 +4,7 @@ import HeroEditor from "@/components/admin/hero-editor"
 import GamesEditor from "@/components/admin/games-editor"
 import OccasionsEditor from "@/components/admin/occasions-editor"
 import HowItWorksEditor from "@/components/admin/how-it-works-editor"
-// импортируй остальные редакторы, если нужно
+// импортируй остальные редакторы
 
 export default function AdminPage() {
   return (
