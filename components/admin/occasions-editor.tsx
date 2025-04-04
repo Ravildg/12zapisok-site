@@ -18,7 +18,7 @@ const availableImages = [
   "/uploads/kn8.jpg", "/uploads/kn9.jpg", "/uploads/logo.png",
   "/uploads/pv10.jpg", "/uploads/pv11.jpg", "/uploads/pv3.jpg",
   "/uploads/pv4.jpg", "/uploads/pv5.jpg", "/uploads/pv6.jpg",
-  "/uploads/rn10.jpg", "/uploads/rn9.jpg","/uploads/povod1.png","/uploads/kn12.jpg",
+  "/uploads/rn10.jpg", "/uploads/rn9.jpg","/uploads/povod1.png","/uploads/kn13.jpg",
 ]
 
 const defaultOccasions: Occasion[] = [
