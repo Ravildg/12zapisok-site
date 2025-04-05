@@ -17,6 +17,7 @@ interface Game {
   crop?: Point
   zoom?: number
   croppedAreaPixels?: Area
+  croppedImage?: string // Добавляем поле для хранения обрезанного изображения
 }
 
 const availableImages = [
@@ -87,6 +88,36 @@ const initialGamesData: Game[] = [
   },
 ]
 
+const cropImage = async (imageSrc: string, crop: { x: number; y: number; width: number; height: number }) => {
+  return new Promise<string>((resolve) => {
+    const img = new Image()
+    img.crossOrigin = "anonymous"
+    img.src = imageSrc
+    img.onload = () => {
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+
+      canvas.width = crop.width
+      canvas.height = crop.height
+      ctx.drawImage(
+        img,
+        crop.x,
+        crop.y,
+        crop.width,
+        crop.height,
+        0,
+        0,
+        crop.width,
+        crop.height
+      )
+
+      resolve(canvas.toDataURL("image/jpeg"))
+    }
+    img.onerror = () => resolve(imageSrc) // Если не удалось загрузить, возвращаем исходное изображение
+  })
+}
+
 export default function GamesEditor() {
   const [gamesData, setGamesData] = useState<Game[]>(initialGamesData)
 
@@ -128,9 +159,16 @@ export default function GamesEditor() {
   }
 
   const onCropComplete = useCallback(
-    (index: number, croppedArea: Area, croppedAreaPixels: Area) => {
+    async (index: number, croppedArea: Area, croppedAreaPixels: Area) => {
       const updated = [...gamesData]
       updated[index] = { ...updated[index], croppedAreaPixels }
+
+      // Выполняем обрезку через canvas и сохраняем результат
+      if (croppedAreaPixels) {
+        const croppedImage = await cropImage(gamesData[index].image, croppedAreaPixels)
+        updated[index].croppedImage = croppedImage
+      }
+
       setGamesData(updated)
     },
     [gamesData]
@@ -227,7 +265,7 @@ export default function GamesEditor() {
 
           <div>
             <label className="block mb-1 font-medium text-zinc-300">Обрезка изображения</label>
-            <div className="relative w-full h-64">
+            <div className="relative w-1/3 h-64">
               <Cropper
                 image={game.image}
                 crop={game.crop || { x: 0, y: 0 }}
@@ -255,19 +293,27 @@ export default function GamesEditor() {
             <div className="mt-2">
               <label className="block mb-1 font-medium text-zinc-300">Превью</label>
               <div className="relative w-1/3 h-64">
-                <Image
-                  src={game.image}
-                  alt="превью"
-                  fill
-                  className="object-cover rounded border border-purple-500/30"
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: game.crop
-                      ? `${game.crop.x}px ${game.crop.y}px`
-                      : "center",
-                    transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
-                  }}
-                />
+                {game.croppedImage ? (
+                  <img
+                    src={game.croppedImage}
+                    alt="превью"
+                    className="object-cover rounded border border-purple-500/30 w-full h-full"
+                  />
+                ) : (
+                  <Image
+                    src={game.image}
+                    alt="превью"
+                    fill
+                    className="object-cover rounded border border-purple-500/30"
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: game.crop
+                        ? `${game.crop.x}px ${game.crop.y}px`
+                        : "center",
+                      transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>
