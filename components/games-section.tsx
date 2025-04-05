@@ -7,6 +7,8 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { SectionData, defaultSectionData } from "@/lib/games-data"
 
+export const dynamic = "force-dynamic"
+
 export default function GamesSection() {
   const [sectionData, setSectionData] = useState<SectionData>(defaultSectionData)
   const [glitch, setGlitch] = useState(false)
@@ -15,43 +17,102 @@ export default function GamesSection() {
 
   const loadSectionData = () => {
     const savedSection = localStorage.getItem("sectionData")
+    let newSectionData = { ...defaultSectionData }
+
     if (savedSection) {
       try {
         const parsed: SectionData = JSON.parse(savedSection)
         const enrichedGames = parsed.games.map((g) => ({
           ...g,
           tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
-          duration: g.duration || "",
+          duration: g.duration || "2 часа",
         }))
-        setSectionData({
-          games: enrichedGames,
+        console.log("Загружены данные в GamesSection:", parsed)
+        console.log("Количество игр в parsed.games:", parsed.games.length)
+
+        // Merge with defaultSectionData to ensure all 5 games are present
+        const mergedGames = [...enrichedGames]
+        defaultSectionData.games.forEach((defaultGame, index) => {
+          if (!mergedGames[index]) {
+            mergedGames[index] = defaultGame
+          }
+        })
+
+        newSectionData = {
+          games: mergedGames,
           sectionTitle: parsed.sectionTitle || defaultSectionData.sectionTitle,
           sectionSubtitle: parsed.sectionSubtitle || defaultSectionData.sectionSubtitle,
-        })
+        }
       } catch (e) {
         console.warn("Ошибка загрузки sectionData:", e)
-        setSectionData(defaultSectionData)
       }
     }
+
+    const savedGames = localStorage.getItem("savedGames")
+    if (savedGames) {
+      try {
+        const parsed: Game[] = JSON.parse(savedGames)
+        const enrichedGames = parsed.map((g) => ({
+          ...g,
+          tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
+          duration: g.duration || "2 часа",
+        }))
+        console.log("Загружены игры в GamesSection:", enrichedGames)
+        console.log("Количество игр в savedGames:", parsed.length)
+
+        // Merge with defaultSectionData to ensure all 5 games are present
+        const mergedGames = [...enrichedGames]
+        defaultSectionData.games.forEach((defaultGame, index) => {
+          if (!mergedGames[index]) {
+            mergedGames[index] = defaultGame
+          }
+        })
+
+        newSectionData = {
+          ...newSectionData,
+          games: mergedGames,
+        }
+      } catch (e) {
+        console.warn("Ошибка загрузки savedGames:", e)
+      }
+    }
+
+    console.log("Используются данные после слияния:", newSectionData)
+    console.log("Количество игр после слияния:", newSectionData.games.length)
+    setSectionData(newSectionData)
   }
 
   useEffect(() => {
     loadSectionData()
-    window.addEventListener("gamesDataUpdated", loadSectionData)
-    return () => window.removeEventListener("gamesDataUpdated", loadSectionData)
+
+    const handleGamesDataUpdated = () => {
+      console.log("Событие gamesDataUpdated получено")
+      loadSectionData()
+    }
+
+    window.addEventListener("gamesDataUpdated", handleGamesDataUpdated)
+    return () => {
+      window.removeEventListener("gamesDataUpdated", handleGamesDataUpdated)
+    }
   }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
+      console.log("Glitch effect triggered:", new Date().toISOString())
       setGlitch(true)
-      setTimeout(() => setGlitch(false), 1500)
-    }, 10000) // Увеличен интервал до 10 секунд
+      setTimeout(() => {
+        setGlitch(false)
+        console.log("Glitch effect ended:", new Date().toISOString())
+      }, 1500)
+    }, 5000)
+
     return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
@@ -63,7 +124,7 @@ export default function GamesSection() {
     resizeCanvas()
     window.addEventListener("resize", resizeCanvas)
 
-    const particleCount = 6 // Уменьшено для оптимизации
+    const particleCount = 12
     particlesRef.current = Array.from({ length: particleCount }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -73,23 +134,47 @@ export default function GamesSection() {
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+
       particlesRef.current.forEach((particle) => {
         particle.y -= particle.speed
         if (particle.y < 0) {
           particle.y = canvas.height
           particle.x = Math.random() * canvas.width
         }
+
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, particle.size / 2, 0, Math.PI * 2)
         ctx.fillStyle = "rgba(147, 51, 234, 0.5)"
         ctx.fill()
       })
+
+      ctx.strokeStyle = "rgba(147, 51, 234, 0.3)"
+      ctx.lineWidth = 1
+      for (let i = 0; i < particlesRef.current.length; i++) {
+        for (let j = i + 1; j < particlesRef.current.length; j++) {
+          const p1 = particlesRef.current[i]
+          const p2 = particlesRef.current[j]
+          const distance = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+          if (distance < 200) {
+            ctx.beginPath()
+            ctx.moveTo(p1.x, p1.y)
+            ctx.lineTo(p2.x, p2.y)
+            ctx.stroke()
+          }
+        }
+      }
+
       requestAnimationFrame(animate)
     }
 
     animate()
-    return () => window.removeEventListener("resize", resizeCanvas)
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas)
+    }
   }, [])
+
+  console.log("Окончательное количество игр в sectionData.games:", sectionData.games.length)
 
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
@@ -108,7 +193,7 @@ export default function GamesSection() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {sectionData.sectionTitle.split(" ").map((word, i) =>
               i === 1 ? (
                 <span
@@ -166,15 +251,13 @@ export default function GamesSection() {
                   >
                     {game.description}
                   </p>
-                  {game.players && game.duration && (
-                    <div
-                      className={`text-xs text-purple-300 mt-1 transition-all duration-200 ${
-                        glitch ? "animate-matrix-glitch" : ""
-                      }`}
-                    >
-                      <span>{game.players}</span> · <span>{game.duration}</span>
-                    </div>
-                  )}
+                  <div
+                    className={`text-xs text-purple-300 mt-1 transition-all duration-200 ${
+                      glitch ? "animate-matrix-glitch" : ""
+                    }`}
+                  >
+                    <span>{game.players}</span> · <span>{game.duration}</span>
+                  </div>
                   <div className="flex gap-2 flex-wrap mt-2">
                     {(Array.isArray(game.tags) ? game.tags : []).map((tag) => (
                       <span
