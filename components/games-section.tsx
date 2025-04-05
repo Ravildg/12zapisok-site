@@ -59,12 +59,12 @@ export default function GamesSection() {
   const [games, setGames] = useState<Game[]>(fallbackGames)
   const [glitch, setGlitch] = useState(false)
 
-  // Эффект ряби текста каждые 10 секунд
+  // Эффект ряби текста каждые 5 секунд
   useEffect(() => {
     const interval = setInterval(() => {
       setGlitch(true)
       setTimeout(() => setGlitch(false), 500) // Длительность эффекта ряби
-    }, 10000) // Каждые 10 секунд
+    }, 5000) // Каждые 5 секунд
 
     return () => clearInterval(interval)
   }, [])
@@ -146,11 +146,13 @@ export default function GamesSection() {
         </div>
 
         <div className="space-y-12">
-          {games.map((game) => (
+          {games.map((game, index) => (
             <Link
               key={game.title}
               href={game.link}
-              className="flex flex-col md:flex-row items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#00ffcc] duration-300"
+              className={`flex flex-col md:flex-row ${
+                index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#4B0082] duration-300`}
             >
               <div className="md:w-1/3 w-full h-64 relative">
                 <Image
@@ -167,7 +169,7 @@ export default function GamesSection() {
                   }}
                 />
               </div>
-              <div className="md:w-2/3 w-full p-6 md:p-8 space-y-4 flex flex-col justify-between">
+              <div className="md:w-2/3 w-full p-6 md:p-10 space-y-4 flex flex-col justify-between">
                 <div>
                   <h3
                     className={`text-2xl font-bold text-white transition-all duration-200 ${
@@ -217,34 +219,31 @@ export default function GamesSection() {
         </div>
       </div>
 
-      {/* Добавим CSS для эффекта ряби */}
+      {/* CSS для эффекта ряби */}
       <style jsx>{`
         @keyframes glitch {
           0% {
-            text-shadow: 0.05em 0 0 #00ffcc, -0.05em 0 0 #ff00c1;
+            transform: translate(0);
           }
-          14% {
-            text-shadow: 0.05em 0 0 #00ffcc, -0.05em 0 0 #ff00c1;
+          20% {
+            transform: translate(-2px, 0);
           }
-          15% {
-            text-shadow: -0.05em -0.025em 0 #00ffcc, 0.025em 0.035em 0 #ff00c1;
+          40% {
+            transform: translate(2px, 0);
           }
-          49% {
-            text-shadow: -0.05em -0.025em 0 #00ffcc, 0.025em 0.035em 0 #ff00c1;
+          60% {
+            transform: translate(-1px, 0);
           }
-          50% {
-            text-shadow: 0.025em 0.035em 0 #00ffcc, 0.05em 0 0 #ff00c1;
-          }
-          99% {
-            text-shadow: 0.025em 0.035em 0 #00ffcc, 0.05em 0 0 #ff00c1;
+          80% {
+            transform: translate(1px, 0);
           }
           100% {
-            text-shadow: -0.025em 0 0 #00ffcc, -0.025em -0.025em 0 #ff00c1;
+            transform: translate(0);
           }
         }
 
         .animate-glitch {
-          animation: glitch 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+          animation: glitch 0.5s linear infinite;
         }
       `}</style>
     </section>
