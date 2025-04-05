@@ -195,16 +195,16 @@ export default function GamesSection() {
           <p className="text-white text-base md:text-lg">{sectionData.sectionSubtitle}</p>
         </div>
 
-        <div className="space-y-12 max-w-4xl mx-auto">
+        <div className="space-y-12 max-w-5xl mx-auto">
           {sectionData.games.map((game, index) => (
             <Link
               key={game.title}
               href={game.link}
               className={`flex flex-col md:flex-row ${
                 index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/60 min-h-[16rem] hover:shadow-[0_0_30px_rgba(147,51,234,0.8)] duration-300 hover:scale-105`}
+              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/60 min-h-[12rem] hover:shadow-[0_0_30px_rgba(147,51,234,0.8)] duration-300 hover:scale-105`}
             >
-              <div className="md:w-1/3 w-full h-[216px] relative aspect-[16/9]">
+              <div className="md:w-1/3 w-full h-[180px] relative aspect-[16/9]">
                 {game.croppedImage ? (
                   <img
                     src={game.croppedImage}
@@ -220,30 +220,30 @@ export default function GamesSection() {
                   />
                 )}
               </div>
-              <div className="md:w-2/3 w-full p-8 md:p-12 space-y-4 flex flex-col justify-between">
+              <div className="md:w-2/3 w-full p-6 md:p-8 space-y-3 flex flex-col justify-between">
                 <div>
                   <h3
-                    className={`text-2xl font-bold text-white transition-all duration-200 ${
+                    className={`text-xl font-bold text-white transition-all duration-200 ${
                       glitch ? "animate-matrix-glitch" : ""
                     }`}
                   >
                     {game.title}
                   </h3>
                   <p
-                    className={`text-zinc-300 mt-2 transition-all duration-200 ${
+                    className={`text-zinc-300 text-sm mt-1 transition-all duration-200 ${
                       glitch ? "animate-matrix-glitch" : ""
                     }`}
                   >
                     {game.description}
                   </p>
                   <div
-                    className={`text-sm text-purple-300 mt-2 transition-all duration-200 ${
+                    className={`text-xs text-purple-300 mt-1 transition-all duration-200 ${
                       glitch ? "animate-matrix-glitch" : ""
                     }`}
                   >
                     <span>{game.players}</span> · <span>{game.duration}</span>
                   </div>
-                  <div className="flex gap-2 flex-wrap mt-3">
+                  <div className="flex gap-2 flex-wrap mt-2">
                     {game.tags.map((tag) => (
                       <span
                         key={tag}
@@ -256,10 +256,10 @@ export default function GamesSection() {
                     ))}
                   </div>
                 </div>
-                <div className="pt-4">
+                <div className="pt-3">
                   <Button
                     asChild
-                    className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                    className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 text-sm py-2 px-4"
                   >
                     <Link href={game.link}>Подробнее</Link>
                   </Button>
