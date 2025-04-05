@@ -20,6 +20,12 @@ interface Game {
   croppedImage?: string
 }
 
+interface SectionData {
+  games: Game[]
+  sectionTitle: string
+  sectionSubtitle: string
+}
+
 const availableImages = [
   "/uploads/bt0.jpg",
   "/uploads/bt1.jpg",
@@ -88,6 +94,12 @@ const initialGamesData: Game[] = [
   },
 ]
 
+const initialSectionData: SectionData = {
+  games: initialGamesData,
+  sectionTitle: "Наши квест-спектакли",
+  sectionSubtitle: "Погрузитесь в историю, которую будете вспоминать всегда",
+}
+
 const cropImage = async (
   imageSrc: string,
   crop: { x: number; y: number; width: number; height: number },
@@ -109,8 +121,8 @@ const cropImage = async (
       }
 
       // Устанавливаем размеры canvas с соотношением сторон 16:9
-      const targetWidth = 384 // Примерное значение для w-1/3 на экране 1152px
-      const targetHeight = 216 // 384 * (9/16) = 216px для соотношения 16:9
+      const targetWidth = 384
+      const targetHeight = 216
       canvas.width = targetWidth
       canvas.height = targetHeight
 
@@ -148,92 +160,124 @@ const cropImage = async (
 }
 
 export default function GamesEditor() {
-  const [gamesData, setGamesData] = useState<Game[]>(initialGamesData)
+  const [sectionData, setSectionData] = useState<SectionData>(initialSectionData)
 
   useEffect(() => {
-    const saved = localStorage.getItem("savedGames")
+    const saved = localStorage.getItem("sectionData")
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed)) {
-          console.log("Загружены данные из localStorage:", parsed) // Отладка
-          setGamesData(parsed)
-        }
+        console.log("Загружены данные из localStorage:", parsed) // Отладка
+        setSectionData(parsed)
       } catch (error) {
-        console.warn("Ошибка загрузки savedGames:", error)
+        console.warn("Ошибка загрузки sectionData:", error)
       }
     }
   }, [])
 
-  const handleChange = (
+  const handleSectionChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: "sectionTitle" | "sectionSubtitle"
+  ) => {
+    const value = e.target.value
+    setSectionData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleGameChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
     index: number,
     field: keyof Game
   ) => {
     const value = e.target.value
-    const updated = [...gamesData]
-    updated[index] = { ...updated[index], [field]: value }
+    const updatedGames = [...sectionData.games]
+    updatedGames[index] = { ...updatedGames[index], [field]: value }
     // Если изменили изображение, сбрасываем обрезку
     if (field === "image") {
-      updated[index].croppedImage = undefined
-      updated[index].crop = { x: 0, y: 0 }
-      updated[index].zoom = 1
-      updated[index].croppedAreaPixels = undefined
+      updatedGames[index].croppedImage = undefined
+      updatedGames[index].crop = { x: 0, y: 0 }
+      updatedGames[index].zoom = 1
+      updatedGames[index].croppedAreaPixels = undefined
     }
-    setGamesData(updated)
+    setSectionData((prev) => ({ ...prev, games: updatedGames }))
   }
 
   const onCropChange = (index: number, crop: Point) => {
     console.log("onCropChange:", { index, crop }) // Отладка
-    const updated = [...gamesData]
-    updated[index] = { ...updated[index], crop }
-    setGamesData(updated)
+    const updatedGames = [...sectionData.games]
+    updatedGames[index] = { ...updatedGames[index], crop }
+    setSectionData((prev) => ({ ...prev, games: updatedGames }))
   }
 
   const onZoomChange = (index: number, zoom: number) => {
     console.log("onZoomChange:", { index, zoom }) // Отладка
-    const updated = [...gamesData]
-    updated[index] = { ...updated[index], zoom }
-    setGamesData(updated)
+    const updatedGames = [...sectionData.games]
+    updatedGames[index] = { ...updatedGames[index], zoom }
+    setSectionData((prev) => ({ ...prev, games: updatedGames }))
   }
 
   const onCropComplete = useCallback(
     async (index: number, croppedArea: Area, croppedAreaPixels: Area) => {
       console.log("onCropComplete called:", { index, croppedArea, croppedAreaPixels }) // Отладка
-      const updated = [...gamesData]
-      updated[index] = { ...updated[index], croppedAreaPixels }
+      const updatedGames = [...sectionData.games]
+      updatedGames[index] = { ...updatedGames[index], croppedAreaPixels }
 
       try {
         if (croppedAreaPixels) {
           const croppedImage = await cropImage(
-            gamesData[index].image,
+            sectionData.games[index].image,
             croppedAreaPixels,
-            gamesData[index].zoom || 1
+            sectionData.games[index].zoom || 1
           )
-          updated[index].croppedImage = croppedImage
-          console.log("Состояние после обрезки:", updated[index]) // Отладка
+          updatedGames[index].croppedImage = croppedImage
+          console.log("Состояние после обрезки:", updatedGames[index]) // Отладка
         }
       } catch (error) {
         console.error("Ошибка обрезки изображения:", error)
       }
 
-      setGamesData(updated)
+      setSectionData((prev) => ({ ...prev, games: updatedGames }))
     },
-    [gamesData]
+    [sectionData]
   )
 
   const handleSave = () => {
-    console.log("Сохранение данных:", gamesData) // Отладка
-    localStorage.setItem("savedGames", JSON.stringify(gamesData))
-    alert("Игры сохранены!")
+    console.log("Сохранение данных:", sectionData) // Отладка
+    localStorage.setItem("sectionData", JSON.stringify(sectionData))
+    // Сохраняем игры отдельно для совместимости с предыдущей версией
+    localStorage.setItem("savedGames", JSON.stringify(sectionData.games))
+    alert("Данные сохранены!")
     window.dispatchEvent(new Event("gamesDataUpdated"))
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold mb-4 text-white">Редактирование игр</h2>
+      <h2 className="text-xl font-semibold mb-4 text-white">Редактирование раздела игр</h2>
 
-      {gamesData.map((game, index) => (
+      {/* Редактирование заголовка и подзаголовка */}
+      <div className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4">
+        <h3 className="text-lg font-bold text-white">Заголовок и подзаголовок раздела</h3>
+        <div>
+          <label className="block mb-1 font-medium text-zinc-300">Заголовок</label>
+          <input
+            type="text"
+            value={sectionData.sectionTitle}
+            onChange={(e) => handleSectionChange(e, "sectionTitle")}
+            className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 font-medium text-zinc-300">Подзаголовок</label>
+          <textarea
+            value={sectionData.sectionSubtitle}
+            onChange={(e) => handleSectionChange(e, "sectionSubtitle")}
+            className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
+            rows={2}
+          />
+        </div>
+      </div>
+
+      {/* Редактирование игр */}
+      {sectionData.games.map((game, index) => (
         <div key={index} className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4">
           <h3 className="text-lg font-bold text-white">Игра {index + 1}</h3>
 
@@ -242,7 +286,7 @@ export default function GamesEditor() {
             <input
               type="text"
               value={game.title}
-              onChange={(e) => handleChange(e, index, "title")}
+              onChange={(e) => handleGameChange(e, index, "title")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
@@ -251,7 +295,7 @@ export default function GamesEditor() {
             <label className="block mb-1 font-medium text-zinc-300">Описание</label>
             <textarea
               value={game.description}
-              onChange={(e) => handleChange(e, index, "description")}
+              onChange={(e) => handleGameChange(e, index, "description")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
               rows={3}
             />
@@ -262,7 +306,7 @@ export default function GamesEditor() {
             <input
               type="text"
               value={game.players}
-              onChange={(e) => handleChange(e, index, "players")}
+              onChange={(e) => handleGameChange(e, index, "players")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
@@ -272,7 +316,7 @@ export default function GamesEditor() {
             <input
               type="text"
               value={game.duration || ""}
-              onChange={(e) => handleChange(e, index, "duration")}
+              onChange={(e) => handleGameChange(e, index, "duration")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
@@ -282,7 +326,7 @@ export default function GamesEditor() {
             <input
               type="text"
               value={game.tags}
-              onChange={(e) => handleChange(e, index, "tags")}
+              onChange={(e) => handleGameChange(e, index, "tags")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
@@ -292,7 +336,7 @@ export default function GamesEditor() {
             <input
               type="text"
               value={game.link}
-              onChange={(e) => handleChange(e, index, "link")}
+              onChange={(e) => handleGameChange(e, index, "link")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
@@ -301,7 +345,7 @@ export default function GamesEditor() {
             <label className="block mb-1 font-medium text-zinc-300">Изображение</label>
             <select
               value={game.image}
-              onChange={(e) => handleChange(e, index, "image")}
+              onChange={(e) => handleGameChange(e, index, "image")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             >
               {availableImages.map((src) => (
@@ -369,7 +413,7 @@ export default function GamesEditor() {
         onClick={handleSave}
         className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded hover:from-purple-700 hover:to-pink-700"
       >
-        Сохранить все игры
+        Сохранить все данные
       </button>
     </div>
   )
