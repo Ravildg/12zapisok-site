@@ -43,7 +43,7 @@ const sectionData = {
       players: "6-12 человек",
       tags: ["Стимпанк", "Головоломки", "Выйти из комнаты", "Мистическое средневековье", "Эффектные декорации", "Механические загадки", "Удивительные тайники", "4 тайные комнаты"],
       image: "/uploads/pv10.jpg",
-      link: "/https://xn--12-8kc1agm1agt.xn--p1ai/petlya_vremeni",
+      link: "https://xn--12-8kc1agm1agt.xn--p1ai/petlya_vremeni",
       duration: "2 часа"
     },
     {
