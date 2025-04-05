@@ -1,3 +1,4 @@
+// components/games-section.tsx
 "use client"
 
 import { useEffect, useState } from "react"
@@ -13,6 +14,9 @@ interface Game {
   image: string
   link: string
   duration?: string
+  crop?: { x: number; y: number }
+  zoom?: number
+  croppedAreaPixels?: { x: number; y: number; width: number; height: number }
 }
 
 const fallbackGames: Game[] = [
@@ -24,6 +28,8 @@ const fallbackGames: Game[] = [
     image: "/uploads/ki2.jpg",
     link: "/game/collector",
     duration: "2 часа",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
   {
     title: "Бермудский Треугольник",
@@ -33,6 +39,8 @@ const fallbackGames: Game[] = [
     image: "/uploads/ki3.jpg",
     link: "/game/bermuda",
     duration: "1.5 часа",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
   {
     title: "Кланы Нью-Йорка",
@@ -42,6 +50,8 @@ const fallbackGames: Game[] = [
     image: "/uploads/ki4.jpg",
     link: "/game/new-york-clans",
     duration: "2 часа",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
 ]
 
@@ -55,13 +65,36 @@ export default function GamesSection() {
         const parsed: Game[] = JSON.parse(saved)
         const enriched = parsed.map((g) => ({
           ...g,
-          tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t) => t.trim()),
+          tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
           duration: g.duration || "2 часа",
         }))
         setGames(enriched)
       } catch (e) {
         console.warn("Ошибка загрузки savedGames:", e)
       }
+    }
+
+    // Подписываемся на событие обновления данных
+    const handleGamesDataUpdated = () => {
+      const updated = localStorage.getItem("savedGames")
+      if (updated) {
+        try {
+          const parsed: Game[] = JSON.parse(updated)
+          const enriched = parsed.map((g) => ({
+            ...g,
+            tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
+            duration: g.duration || "2 часа",
+          }))
+          setGames(enriched)
+        } catch (e) {
+          console.warn("Ошибка загрузки updatedGames:", e)
+        }
+      }
+    }
+
+    window.addEventListener("gamesDataUpdated", handleGamesDataUpdated)
+    return () => {
+      window.removeEventListener("gamesDataUpdated", handleGamesDataUpdated)
     }
   }, [])
 
@@ -116,7 +149,14 @@ export default function GamesSection() {
                   src={game.image}
                   alt={game.title}
                   fill
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
+                  className="w-full h-full transition-transform duration-300 group-hover:scale-105 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: game.crop
+                      ? `${game.crop.x}px ${game.crop.y}px`
+                      : "center",
+                    transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
+                  }}
                 />
               </div>
               <div className="md:w-1/2 w-full p-6 md:p-10 space-y-3">
