@@ -30,7 +30,7 @@ export default function GamesSection() {
         console.log("Загружены данные в GamesSection:", parsed)
         console.log("Количество игр в parsed.games:", parsed.games.length)
 
-        // Merge with defaultSectionData to ensure all 5 games are present
+        // Merge with defaultSectionData to ensure all games are present
         const mergedGames = [...enrichedGames]
         defaultSectionData.games.forEach((defaultGame, index) => {
           if (!mergedGames[index]) {
@@ -60,7 +60,7 @@ export default function GamesSection() {
         console.log("Загружены игры в GamesSection:", enrichedGames)
         console.log("Количество игр в savedGames:", parsed.length)
 
-        // Merge with defaultSectionData to ensure all 5 games are present
+        // Merge with defaultSectionData to ensure all games are present
         const mergedGames = [...enrichedGames]
         defaultSectionData.games.forEach((defaultGame, index) => {
           if (!mergedGames[index]) {
