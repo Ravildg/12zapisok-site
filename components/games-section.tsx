@@ -57,6 +57,17 @@ const fallbackGames: Game[] = [
 
 export default function GamesSection() {
   const [games, setGames] = useState<Game[]>(fallbackGames)
+  const [glitch, setGlitch] = useState(false)
+
+  // Эффект ряби текста каждые 10 секунд
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGlitch(true)
+      setTimeout(() => setGlitch(false), 500) // Длительность эффекта ряби
+    }, 10000) // Каждые 10 секунд
+
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     const saved = localStorage.getItem("savedGames")
@@ -74,7 +85,6 @@ export default function GamesSection() {
       }
     }
 
-    // Подписываемся на событие обновления данных
     const handleGamesDataUpdated = () => {
       const updated = localStorage.getItem("savedGames")
       if (updated) {
@@ -136,20 +146,18 @@ export default function GamesSection() {
         </div>
 
         <div className="space-y-12">
-          {games.map((game, index) => (
+          {games.map((game) => (
             <Link
               key={game.title}
               href={game.link}
-              className={`flex flex-col md:flex-row ${
-                index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all hover:shadow-[0_0_20px_#a855f7] group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem]`}
+              className="flex flex-col md:flex-row items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#00ffcc] duration-300"
             >
-              <div className="md:w-1/2 w-full h-64 relative">
+              <div className="md:w-1/3 w-full h-64 relative">
                 <Image
                   src={game.image}
                   alt={game.title}
                   fill
-                  className="w-full h-full transition-transform duration-300 group-hover:scale-105 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
+                  className="w-full h-full transition-transform duration-300 group-hover:scale-110 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
                   style={{
                     objectFit: "cover",
                     objectPosition: game.crop
@@ -159,34 +167,48 @@ export default function GamesSection() {
                   }}
                 />
               </div>
-              <div className="md:w-1/2 w-full p-6 md:p-10 space-y-3">
-                <h3 className="text-2xl font-bold text-white">{game.title}</h3>
-                <p className="text-zinc-300">{game.description}</p>
-                <div className="text-sm text-purple-300">
-                  <span>{game.players}</span> · <span>{game.duration}</span>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {game.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 text-xs rounded-full bg-purple-700/20 text-purple-300 border border-purple-500/30"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="pt-4 flex gap-3">
-                  <Button
-                    variant="secondary"
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+              <div className="md:w-2/3 w-full p-6 md:p-8 space-y-4 flex flex-col justify-between">
+                <div>
+                  <h3
+                    className={`text-2xl font-bold text-white transition-all duration-200 ${
+                      glitch ? "animate-glitch" : ""
+                    }`}
                   >
-                    Выбрать игру
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 bg-transparent text-white border border-white/50 hover:bg-white/10"
+                    {game.title}
+                  </h3>
+                  <p
+                    className={`text-zinc-300 mt-2 transition-all duration-200 ${
+                      glitch ? "animate-glitch" : ""
+                    }`}
                   >
-                    Как это работает
+                    {game.description}
+                  </p>
+                  <div
+                    className={`text-sm text-purple-300 mt-2 transition-all duration-200 ${
+                      glitch ? "animate-glitch" : ""
+                    }`}
+                  >
+                    <span>{game.players}</span> · <span>{game.duration}</span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap mt-3">
+                    {game.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className={`px-2 py-1 text-xs rounded-full bg-purple-700/20 text-purple-300 border border-purple-500/30 transition-all duration-200 ${
+                          glitch ? "animate-glitch" : ""
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="pt-4">
+                  <Button
+                    asChild
+                    className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                  >
+                    <Link href={game.link}>Подробнее</Link>
                   </Button>
                 </div>
               </div>
@@ -194,6 +216,37 @@ export default function GamesSection() {
           ))}
         </div>
       </div>
+
+      {/* Добавим CSS для эффекта ряби */}
+      <style jsx>{`
+        @keyframes glitch {
+          0% {
+            text-shadow: 0.05em 0 0 #00ffcc, -0.05em 0 0 #ff00c1;
+          }
+          14% {
+            text-shadow: 0.05em 0 0 #00ffcc, -0.05em 0 0 #ff00c1;
+          }
+          15% {
+            text-shadow: -0.05em -0.025em 0 #00ffcc, 0.025em 0.035em 0 #ff00c1;
+          }
+          49% {
+            text-shadow: -0.05em -0.025em 0 #00ffcc, 0.025em 0.035em 0 #ff00c1;
+          }
+          50% {
+            text-shadow: 0.025em 0.035em 0 #00ffcc, 0.05em 0 0 #ff00c1;
+          }
+          99% {
+            text-shadow: 0.025em 0.035em 0 #00ffcc, 0.05em 0 0 #ff00c1;
+          }
+          100% {
+            text-shadow: -0.025em 0 0 #00ffcc, -0.025em -0.025em 0 #ff00c1;
+          }
+        }
+
+        .animate-glitch {
+          animation: glitch 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+      `}</style>
     </section>
   )
 }
