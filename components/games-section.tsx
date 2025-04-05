@@ -67,78 +67,89 @@ export default function GamesSection() {
 
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
-      {/* Градиенты и частицы */}
+      {/* Фоновые градиенты */}
       <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/20 blur-3xl rounded-full" />
       <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/10 blur-3xl rounded-full" />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+
+      {/* Анимации частиц */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-purple-500 opacity-10"
+            className="absolute rounded-full bg-pink-500 opacity-10"
             style={{
               width: `${Math.random() * 8 + 4}px`,
               height: `${Math.random() * 8 + 4}px`,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              animation: `float ${Math.random() * 10 + 10}s linear infinite`,
-              animationDelay: `${Math.random() * 5}s`,
+              animation: `float ${Math.random() * 12 + 10}s linear infinite`,
+              animationDelay: `${Math.random() * 6}s`,
             }}
           />
         ))}
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="inline-block mb-12">
-          <span className="inline-block px-4 py-1 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-purple-300 text-sm font-medium border border-purple-500/30">
-            Наши квесты
-          </span>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Наши{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+              квест-спектакли
+            </span>
+          </h2>
+          <p className="text-white text-base md:text-lg">
+            Погрузитесь в историю, которую будете вспоминать всегда
+          </p>
         </div>
 
-        <div className="space-y-12">
-          {games.map((game, index) => (
-            <Link
-              key={game.title}
-              href={game.link}
-              className={`flex flex-col md:flex-row ${
-                index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              } items-center bg-[#1B1530] rounded-xl overflow-hidden transition-all hover:shadow-[0_0_20px_#a855f7] group border border-transparent hover:border-purple-500/40 min-h-[16rem]`}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {games.map((game, idx) => (
+            <div
+              key={idx}
+              className="bg-[#1F1833] rounded-lg overflow-hidden border border-purple-500/20 hover:border-purple-500/40 transition-all"
             >
-              <div className="md:w-1/2 w-full h-64 relative">
-                <Image
-                  src={game.image}
-                  alt={game.title}
-                  fill
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-              <div className="md:w-1/2 w-full p-6 md:p-10 space-y-3">
-                <h3 className="text-2xl font-bold text-white group-hover:text-purple-400 transition-colors">
-                  {game.title}
-                </h3>
-                <p className="text-zinc-300">{game.description}</p>
-                <div className="text-sm text-purple-300">
-                  <span>{game.players}</span> · <span>{game.duration}</span>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {game.tags.map((tag) => (
+              <Image
+                src={game.image}
+                alt={game.title}
+                width={600}
+                height={400}
+                className="w-full h-48 object-cover rounded-t-lg"
+              />
+
+              <div className="p-6 space-y-3">
+                <h3 className="text-xl font-semibold text-white">{game.title}</h3>
+                <p className="text-zinc-300 text-sm">{game.description}</p>
+                <div className="text-sm text-purple-300">{game.players} · {game.duration}</div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {game.tags.map((tag, i) => (
                     <span
-                      key={tag}
-                      className="px-2 py-1 text-xs rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/30"
+                      key={i}
+                      className="px-2 py-1 text-xs rounded bg-purple-700/20 text-purple-300 border border-purple-500/30"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="pt-4">
-                  <Button
-                    variant="secondary"
-                    className="w-full bg-purple-600/20 text-purple-300 hover:bg-purple-600/30"
-                  >
-                    Подробнее
-                  </Button>
+                <div className="pt-4 flex gap-3">
+                  <Link href={game.link} className="flex-1">
+                    <Button
+                      variant="secondary"
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                    >
+                      Выбрать игру
+                    </Button>
+                  </Link>
+                  <Link href={game.link} className="flex-1">
+                    <Button
+                      variant="outline"
+                      className="w-full bg-transparent text-white border border-white/50 hover:bg-white/10"
+                    >
+                      Как это работает
+                    </Button>
+                  </Link>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
