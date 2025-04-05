@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,25 @@ const galleryImages = [
 export default function GallerySection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particlesRef = useRef<Array<{ x: number; y: number; size: number; speed: number }>>([]);
+  const glitchRef = useRef(false);
 
+  // Эффект glitch
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("Glitch effect triggered:", new Date().toISOString());
+      glitchRef.current = true;
+      setTimeout(() => {
+        glitchRef.current = false;
+        console.log("Glitch effect ended:", new Date().toISOString());
+      }, 1500);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Автопрокрутка галереи
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -46,6 +64,72 @@ export default function GallerySection() {
 
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
+
+  // Анимация частиц на канвасе
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
+    };
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    const particleCount = 12;
+    particlesRef.current = Array.from({ length: particleCount }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 8 + 4,
+      speed: Math.random() * 0.5 + 0.2,
+    }));
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particlesRef.current.forEach((particle) => {
+        particle.y -= particle.speed;
+        if (particle.y < 0) {
+          particle.y = canvas.height;
+          particle.x = Math.random() * canvas.width;
+        }
+
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size / 2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(147, 51, 234, 0.5)";
+        ctx.fill();
+      });
+
+      ctx.strokeStyle = "rgba(147, 51, 234, 0.3)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i < particlesRef.current.length; i++) {
+        for (let j = i + 1; j < particlesRef.current.length; j++) {
+          const p1 = particlesRef.current[i];
+          const p2 = particlesRef.current[j];
+          const distance = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+          if (distance < 200) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+    };
+  }, []);
 
   const prevSlide = () => {
     setIsAutoPlaying(false);
@@ -67,10 +151,21 @@ export default function GallerySection() {
   };
 
   return (
-    <section className="py-20 bg-[#1A1333] relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-600/10 rounded-full blur-3xl"></div>
+    <section className="py-20 bg-[#0F0A1E] relative overflow-hidden">
+      {/* Фоновые элементы с glitch */}
+      <div
+        className={`absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/30 blur-3xl rounded-full transition-all duration-200 ${
+          glitchRef.current ? "animate-glitch-bg" : ""
+        }`}
+      />
+      <div
+        className={`absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/20 blur-3xl rounded-full transition-all duration-200 ${
+          glitchRef.current ? "animate-glitch-bg" : ""
+        }`}
+      />
+
+      {/* Канвас с частицами */}
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center mb-12">
@@ -104,7 +199,7 @@ export default function GallerySection() {
                   />
                 </div>
               ))}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1A1333]/70 via-[#1A1333]/20 to-transparent"></div>
+              {/* Убрал градиент для полной непрозрачности */}
             </div>
 
             {/* Left Arrow */}
