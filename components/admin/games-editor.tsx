@@ -4,6 +4,7 @@
 import { useEffect, useState, useCallback } from "react"
 import Cropper from "react-easy-crop"
 import { Point, Area } from "react-easy-crop/types"
+import Image from "next/image"
 
 interface Game {
   title: string
@@ -12,6 +13,7 @@ interface Game {
   tags: string
   image: string
   link: string
+  duration?: string
   crop?: Point
   zoom?: number
   croppedAreaPixels?: Area
@@ -57,6 +59,7 @@ const initialGamesData: Game[] = [
     tags: "Мистика, Детектив",
     image: "/uploads/ki2.jpg",
     link: "/game/collector",
+    duration: "2 часа",
     crop: { x: 0, y: 0 },
     zoom: 1,
   },
@@ -67,6 +70,7 @@ const initialGamesData: Game[] = [
     tags: "Комедия, Фантастика",
     image: "/uploads/ki3.jpg",
     link: "/game/bermuda",
+    duration: "1.5 часа",
     crop: { x: 0, y: 0 },
     zoom: 1,
   },
@@ -77,6 +81,7 @@ const initialGamesData: Game[] = [
     tags: "Гангстеры, Интриги",
     image: "/uploads/ki4.jpg",
     link: "/game/new-york-clans",
+    duration: "2 часа",
     crop: { x: 0, y: 0 },
     zoom: 1,
   },
@@ -176,6 +181,16 @@ export default function GamesEditor() {
           </div>
 
           <div>
+            <label className="block mb-1 font-medium text-zinc-300">Длительность</label>
+            <input
+              type="text"
+              value={game.duration || ""}
+              onChange={(e) => handleChange(e, index, "duration")}
+              className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
+            />
+          </div>
+
+          <div>
             <label className="block mb-1 font-medium text-zinc-300">Теги</label>
             <input
               type="text"
@@ -246,6 +261,7 @@ export default function GamesEditor() {
                   fill
                   className="object-cover rounded border border-purple-500/30"
                   style={{
+                    objectFit: "cover",
                     objectPosition: game.crop
                       ? `${game.crop.x}px ${game.crop.y}px`
                       : "center",
