@@ -152,7 +152,7 @@ export default function GamesSection() {
               href={game.link}
               className={`flex flex-col md:flex-row ${
                 index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#4B0082] duration-300`}
+              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#2A1B3D] duration-300 hover:scale-105`}
             >
               <div className="md:w-1/3 w-full h-64 relative">
                 <Image
@@ -169,7 +169,7 @@ export default function GamesSection() {
                   }}
                 />
               </div>
-              <div className="md:w-2/3 w-full p-6 md:p-10 space-y-4 flex flex-col justify-between">
+              <div className="md:w-2/3 w-full p-8 md:p-12 space-y-4 flex flex-col justify-between">
                 <div>
                   <h3
                     className={`text-2xl font-bold text-white transition-all duration-200 ${
@@ -219,26 +219,38 @@ export default function GamesSection() {
         </div>
       </div>
 
-      {/* CSS для эффекта ряби */}
+      {/* CSS для эффекта ряби с белым шумом и искажением */}
       <style jsx>{`
         @keyframes glitch {
           0% {
             transform: translate(0);
+            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.3), -0.05em 0 0 rgba(255, 255, 255, 0.3);
+            opacity: 1;
           }
           20% {
             transform: translate(-2px, 0);
+            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.5), -0.05em 0 0 rgba(255, 255, 255, 0.5);
+            opacity: 0.8;
           }
           40% {
             transform: translate(2px, 0);
+            text-shadow: -0.05em 0 0 rgba(255, 255, 255, 0.3), 0.05em 0 0 rgba(255, 255, 255, 0.3);
+            opacity: 0.9;
           }
           60% {
             transform: translate(-1px, 0);
+            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.5), -0.05em 0 0 rgba(255, 255, 255, 0.5);
+            opacity: 0.7;
           }
           80% {
             transform: translate(1px, 0);
+            text-shadow: -0.05em 0 0 rgba(255, 255, 255, 0.3), 0.05em 0 0 rgba(255, 255, 255, 0.3);
+            opacity: 0.9;
           }
           100% {
             transform: translate(0);
+            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.3), -0.05em 0 0 rgba(255, 255, 255, 0.3);
+            opacity: 1;
           }
         }
 
