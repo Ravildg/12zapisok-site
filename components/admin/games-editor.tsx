@@ -1,10 +1,9 @@
-// app/admin/games/page.tsx
+// components/admin/games-editor.tsx
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
 import Cropper from "react-easy-crop"
 import { Point, Area } from "react-easy-crop/types"
-import { useRouter } from "next/navigation"
 
 interface Game {
   title: string
@@ -105,17 +104,7 @@ const initialGamesData: Game[] = [
 
 export default function GamesEditor() {
   const [gamesData, setGamesData] = useState<Game[]>(initialGamesData)
-  const router = useRouter()
 
-  // Проверка авторизации
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem("isAdmin") === "true"
-    if (!isAuthenticated) {
-      router.push("/admin/login")
-    }
-  }, [router])
-
-  // Загрузка сохраненных данных
   useEffect(() => {
     const saved = localStorage.getItem("savedGames")
     if (saved) {
@@ -169,11 +158,11 @@ export default function GamesEditor() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-6 text-white">Редактирование игр</h2>
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold mb-4 text-white">Редактирование игр</h2>
 
       {gamesData.map((game, index) => (
-        <div key={index} className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4 mb-6">
+        <div key={index} className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4">
           <h3 className="text-lg font-bold text-white">Игра {index + 1}</h3>
 
           <div>
