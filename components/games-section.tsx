@@ -17,6 +17,7 @@ interface Game {
   crop?: { x: number; y: number }
   zoom?: number
   croppedAreaPixels?: { x: number; y: number; width: number; height: number }
+  croppedImage?: string // Добавляем поле для обрезанного изображения
 }
 
 const fallbackGames: Game[] = [
@@ -59,11 +60,11 @@ export default function GamesSection() {
   const [games, setGames] = useState<Game[]>(fallbackGames)
   const [glitch, setGlitch] = useState(false)
 
-  // Эффект мерцания текста каждые 5 секунд
+  // Эффект мерцания каждые 5 секунд
   useEffect(() => {
     const interval = setInterval(() => {
       setGlitch(true)
-      setTimeout(() => setGlitch(false), 500) // Длительность эффекта
+      setTimeout(() => setGlitch(false), 1500) // Увеличиваем длительность до 1.5 секунд
     }, 5000) // Каждые 5 секунд
 
     return () => clearInterval(interval)
@@ -111,15 +112,25 @@ export default function GamesSection() {
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
       {/* Фоновые градиенты */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/20 blur-3xl rounded-full" />
-      <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/10 blur-3xl rounded-full" />
+      <div
+        className={`absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/20 blur-3xl rounded-full transition-all duration-200 ${
+          glitch ? "animate-glitch-bg" : ""
+        }`}
+      />
+      <div
+        className={`absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/10 blur-3xl rounded-full transition-all duration-200 ${
+          glitch ? "animate-glitch-bg" : ""
+        }`}
+      />
 
       {/* Анимации частиц */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-pink-500 opacity-10"
+            className={`absolute rounded-full bg-pink-500 opacity-10 transition-all duration-200 ${
+              glitch ? "animate-glitch-bg" : ""
+            }`}
             style={{
               width: `${Math.random() * 8 + 4}px`,
               height: `${Math.random() * 8 + 4}px`,
@@ -155,19 +166,27 @@ export default function GamesSection() {
               } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#2A1B3D] duration-300 hover:scale-105`}
             >
               <div className="md:w-1/3 w-full h-64 relative">
-                <Image
-                  src={game.image}
-                  alt={game.title}
-                  fill
-                  className="w-full h-full transition-transform duration-300 group-hover:scale-110 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: game.crop
-                      ? `${game.crop.x}px ${game.crop.y}px`
-                      : "center",
-                    transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
-                  }}
-                />
+                {game.croppedImage ? (
+                  <img
+                    src={game.croppedImage}
+                    alt={game.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
+                  />
+                ) : (
+                  <Image
+                    src={game.image}
+                    alt={game.title}
+                    fill
+                    className="w-full h-full transition-transform duration-300 group-hover:scale-110 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: game.crop
+                        ? `${game.crop.x}px ${game.crop.y}px`
+                        : "center",
+                      transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
+                    }}
+                  />
+                )}
               </div>
               <div className="md:w-2/3 w-full p-8 md:p-12 space-y-4 flex flex-col justify-between">
                 <div>
@@ -223,35 +242,22 @@ export default function GamesSection() {
       <style jsx>{`
         @keyframes glitch {
           0% {
-            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.3), -0.05em 0 0 rgba(255, 255, 255, 0.3);
+            text-shadow: 0.1em 0 0 rgba(255, 255, 255, 0.5), -0.1em 0 0 rgba(255, 255, 255, 0.5);
             opacity: 1;
           }
           20% {
-            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.5), -0.05em 0 0 rgba(255, 255, 255, 0.5);
-            opacity: 0.8;
+            text-shadow: 0.15em 0 0 rgba(255, 255, 255, 0.7), -0.15em 0 0 rgba(255, 255, 255, 0.7);
+            opacity: 0.6;
           }
           40% {
-            text-shadow: -0.05em 0 0 rgba(255, 255, 255, 0.3), 0.05em 0 0 rgba(255, 255, 255, 0.3);
-            opacity: 0.9;
+            text-shadow: -0.1em 0 0 rgba(255, 255, 255, 0.5), 0.1em 0 0 rgba(255, 255, 255, 0.5);
+            opacity: 0.8;
           }
           60% {
-            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.5), -0.05em 0 0 rgba(255, 255, 255, 0.5);
-            opacity: 0.7;
+            text-shadow: 0.15em 0 0 rgba(255, 255, 255, 0.7), -0.15em 0 0 rgba(255, 255, 255, 0.7);
+            opacity: 0.5;
           }
           80% {
-            text-shadow: -0.05em 0 0 rgba(255, 255, 255, 0.3), 0.05em 0 0 rgba(255, 255, 255, 0.3);
-            opacity: 0.9;
+            text-shadow: -0.1em 0 0 rgba(255, 255, 255, 0.5), 0.1em 0 0 rgba(255, 255, 255, 0.5);
+            opacity: 0.7;
           }
-          100% {
-            text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.3), -0.05em 0 0 rgba(255, 255, 255, 0.3);
-            opacity: 1;
-          }
-        }
-
-        .animate-glitch {
-          animation: glitch 0.5s linear infinite;
-        }
-      `}</style>
-    </section>
-  )
-}
