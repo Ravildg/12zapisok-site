@@ -19,7 +19,6 @@ const galleryImages = [
   "/uploads/ki6.jpg",
   "/uploads/kn10.jpg",
   "/uploads/kn12.jpg",
-  "/uploads/kn13.jpg",
   "/uploads/kn7.jpg",
   "/uploads/kn8.jpg",
   "/uploads/pv10.jpg",
