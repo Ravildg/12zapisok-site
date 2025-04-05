@@ -93,18 +93,21 @@ const cropImage = async (
   crop: { x: number; y: number; width: number; height: number },
   zoom: number
 ) => {
-  return new Promise<string>((resolve) => {
+  return new Promise<string>((resolve, reject) => {
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.src = imageSrc
     img.onload = () => {
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
-      if (!ctx) return
+      if (!ctx) {
+        reject(new Error("Не удалось получить контекст canvas"))
+        return
+      }
 
-      // Устанавливаем размеры canvas равными размерам превью (w-1/3 h-64)
+      // Устанавливаем размеры canvas с соотношением сторон 16:9
       const targetWidth = 384 // Примерное значение для w-1/3 на экране 1152px
-      const targetHeight = 256 // h-64 = 256px
+      const targetHeight = 216 // 384 * (9/16) = 216px для соотношения 16:9
       canvas.width = targetWidth
       canvas.height = targetHeight
 
@@ -127,9 +130,12 @@ const cropImage = async (
         targetHeight
       )
 
-      resolve(canvas.toDataURL("image/jpeg"))
+      resolve(canvas.toDataURL("image/jpeg", 0.9))
     }
-    img.onerror = () => resolve(imageSrc)
+    img.onerror = () => {
+      console.error("Ошибка загрузки изображения:", imageSrc)
+      reject(new Error("Не удалось загрузить изображение"))
+    }
   })
 }
 
@@ -158,56 +164,46 @@ export default function GamesEditor() {
     const value = e.target.value
     const updated = [...gamesData]
     updated[index] = { ...updated[index], [field]: value }
+    // Если изменили изображение, сбрасываем обрезку
+    if (field === "image") {
+      updated[index].croppedImage = undefined
+      updated[index].crop = { x: 0, y: 0 }
+      updated[index].zoom = 1
+      updated[index].croppedAreaPixels = undefined
+    }
     setGamesData(updated)
   }
 
-  const onCropChange = async (index: number, crop: Point) => {
+  const onCropChange = (index: number, crop: Point) => {
     const updated = [...gamesData]
     updated[index] = { ...updated[index], crop }
-
-    // Обновляем обрезанное изображение в реальном времени
-    if (updated[index].croppedAreaPixels) {
-      const croppedImage = await cropImage(
-        updated[index].image,
-        updated[index].croppedAreaPixels!,
-        updated[index].zoom || 1
-      )
-      updated[index].croppedImage = croppedImage
-    }
-
     setGamesData(updated)
   }
 
-  const onZoomChange = async (index: number, zoom: number) => {
+  const onZoomChange = (index: number, zoom: number) => {
     const updated = [...gamesData]
     updated[index] = { ...updated[index], zoom }
-
-    // Обновляем обрезанное изображение в реальном времени
-    if (updated[index].croppedAreaPixels) {
-      const croppedImage = await cropImage(
-        updated[index].image,
-        updated[index].croppedAreaPixels!,
-        zoom
-      )
-      updated[index].croppedImage = croppedImage
-    }
-
     setGamesData(updated)
   }
 
   const onCropComplete = useCallback(
     async (index: number, croppedArea: Area, croppedAreaPixels: Area) => {
+      console.log("onCropComplete called:", { index, croppedArea, croppedAreaPixels }) // Отладка
       const updated = [...gamesData]
       updated[index] = { ...updated[index], croppedAreaPixels }
 
-      // Выполняем обрезку через canvas и сохраняем результат
-      if (croppedAreaPixels) {
-        const croppedImage = await cropImage(
-          gamesData[index].image,
-          croppedAreaPixels,
-          gamesData[index].zoom || 1
-        )
-        updated[index].croppedImage = croppedImage
+      try {
+        if (croppedAreaPixels) {
+          const croppedImage = await cropImage(
+            gamesData[index].image,
+            croppedAreaPixels,
+            gamesData[index].zoom || 1
+          )
+          updated[index].croppedImage = croppedImage
+          console.log("Изображение обрезано:", croppedImage) // Отладка
+        }
+      } catch (error) {
+        console.error("Ошибка обрезки изображения:", error)
       }
 
       setGamesData(updated)
@@ -306,7 +302,7 @@ export default function GamesEditor() {
 
           <div>
             <label className="block mb-1 font-medium text-zinc-300">Обрезка изображения</label>
-            <div className="relative w-1/3 h-64">
+            <div className="relative w-1/3 h-[216px]">
               <Cropper
                 image={game.image}
                 crop={game.crop || { x: 0, y: 0 }}
@@ -333,7 +329,7 @@ export default function GamesEditor() {
             </div>
             <div className="mt-2">
               <label className="block mb-1 font-medium text-zinc-300">Превью</label>
-              <div className="relative w-1/3 h-64">
+              <div className="relative w-1/3 h-[216px]">
                 {game.croppedImage ? (
                   <img
                     src={game.croppedImage}
