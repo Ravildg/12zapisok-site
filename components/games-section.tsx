@@ -20,6 +20,12 @@ interface Game {
   croppedImage?: string
 }
 
+interface SectionData {
+  games: Game[]
+  sectionTitle: string
+  sectionSubtitle: string
+}
+
 const fallbackGames: Game[] = [
   {
     title: "Коллекционер Игр",
@@ -56,22 +62,53 @@ const fallbackGames: Game[] = [
   },
 ]
 
+const defaultSectionData: SectionData = {
+  games: fallbackGames,
+  sectionTitle: "Наши квест-спектакли",
+  sectionSubtitle: "Погрузитесь в историю, которую будете вспоминать всегда",
+}
+
 export default function GamesSection() {
-  const [games, setGames] = useState<Game[]>(fallbackGames)
+  const [sectionData, setSectionData] = useState<SectionData>(defaultSectionData)
   const [glitch, setGlitch] = useState(false)
 
-  const loadGamesData = () => {
-    const saved = localStorage.getItem("savedGames")
-    if (saved) {
+  const loadSectionData = () => {
+    const savedSection = localStorage.getItem("sectionData")
+    if (savedSection) {
       try {
-        const parsed: Game[] = JSON.parse(saved)
-        const enriched = parsed.map((g) => ({
+        const parsed: SectionData = JSON.parse(savedSection)
+        const enrichedGames = parsed.games.map((g) => ({
           ...g,
           tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
           duration: g.duration || "2 часа",
         }))
-        console.log("Загружены данные в GamesSection:", enriched) // Отладка
-        setGames(enriched)
+        console.log("Загружены данные в GamesSection:", parsed) // Отладка
+        setSectionData({
+          games: enrichedGames,
+          sectionTitle: parsed.sectionTitle || defaultSectionData.sectionTitle,
+          sectionSubtitle: parsed.sectionSubtitle || defaultSectionData.sectionSubtitle,
+        })
+        return
+      } catch (e) {
+        console.warn("Ошибка загрузки sectionData:", e)
+      }
+    }
+
+    // Совместимость с предыдущей версией: загружаем только игры
+    const savedGames = localStorage.getItem("savedGames")
+    if (savedGames) {
+      try {
+        const parsed: Game[] = JSON.parse(savedGames)
+        const enrichedGames = parsed.map((g) => ({
+          ...g,
+          tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
+          duration: g.duration || "2 часа",
+        }))
+        console.log("Загружены игры в GamesSection:", enrichedGames) // Отладка
+        setSectionData((prev) => ({
+          ...prev,
+          games: enrichedGames,
+        }))
       } catch (e) {
         console.warn("Ошибка загрузки savedGames:", e)
       }
@@ -80,12 +117,12 @@ export default function GamesSection() {
 
   useEffect(() => {
     // Загружаем данные при монтировании
-    loadGamesData()
+    loadSectionData()
 
     // Обработчик события gamesDataUpdated
     const handleGamesDataUpdated = () => {
       console.log("Событие gamesDataUpdated получено") // Отладка
-      loadGamesData()
+      loadSectionData()
     }
 
     window.addEventListener("gamesDataUpdated", handleGamesDataUpdated)
@@ -142,18 +179,24 @@ export default function GamesSection() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Наши{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
-              квест-спектакли
-            </span>
+            {sectionData.sectionTitle.split(" ").map((word, i) =>
+              i === 1 ? (
+                <span
+                  key={i}
+                  className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500"
+                >
+                  {word}{" "}
+                </span>
+              ) : (
+                <span key={i}>{word} </span>
+              )
+            )}
           </h2>
-          <p className="text-white text-base md:text-lg">
-            Погрузитесь в историю, которую будете вспоминать всегда
-          </p>
+          <p className="text-white text-base md:text-lg">{sectionData.sectionSubtitle}</p>
         </div>
 
-        <div className="space-y-12">
-          {games.map((game, index) => (
+        <div className="space-y-12 max-w-4xl mx-auto">
+          {sectionData.games.map((game, index) => (
             <Link
               key={game.title}
               href={game.link}
@@ -181,21 +224,21 @@ export default function GamesSection() {
                 <div>
                   <h3
                     className={`text-2xl font-bold text-white transition-all duration-200 ${
-                      glitch ? "animate-glitch" : ""
+                      glitch ? "animate-matrix-glitch" : ""
                     }`}
                   >
                     {game.title}
                   </h3>
                   <p
                     className={`text-zinc-300 mt-2 transition-all duration-200 ${
-                      glitch ? "animate-glitch" : ""
+                      glitch ? "animate-matrix-glitch" : ""
                     }`}
                   >
                     {game.description}
                   </p>
                   <div
                     className={`text-sm text-purple-300 mt-2 transition-all duration-200 ${
-                      glitch ? "animate-glitch" : ""
+                      glitch ? "animate-matrix-glitch" : ""
                     }`}
                   >
                     <span>{game.players}</span> · <span>{game.duration}</span>
@@ -205,7 +248,7 @@ export default function GamesSection() {
                       <span
                         key={tag}
                         className={`px-2 py-1 text-xs rounded-full bg-purple-700/20 text-purple-300 border border-purple-500/30 transition-all duration-200 ${
-                          glitch ? "animate-glitch" : ""
+                          glitch ? "animate-matrix-glitch" : ""
                         }`}
                       >
                         {tag}
