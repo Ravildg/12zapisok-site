@@ -1,53 +1,76 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { ChevronLeft, ChevronRight, Camera } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
+// Статические данные для галереи
 const galleryImages = [
-  "/placeholder.svg?height=600&width=800",
-  "/placeholder.svg?height=600&width=800",
-  "/placeholder.svg?height=600&width=800",
-  "/placeholder.svg?height=600&width=800",
-  "/placeholder.svg?height=600&width=800",
-  "/placeholder.svg?height=600&width=800",
-]
+  "/uploads/bt.jpg",
+  "/uploads/bt1.jpg",
+  "/uploads/bt12.jpg",
+  "/uploads/bt5.jpg",
+  "/uploads/bt6.jpg",
+  "/uploads/bt7.jpg",
+  "/uploads/ki0.jpg",
+  "/uploads/ki2.jpg",
+  "/uploads/ki3.jpg",
+  "/uploads/ki4.jpg",
+  "/uploads/ki5.jpg",
+  "/uploads/ki6.jpg",
+  "/uploads/kn10.jpg",
+  "/uploads/kn12.jpg",
+  "/uploads/kn13.jpg",
+  "/uploads/kn3.png",
+  "/uploads/kn6.jpg",
+  "/uploads/kn7.jpg",
+  "/uploads/kn8.jpg",
+  "/uploads/kn9.jpg",
+  "/uploads/pv10.jpg",
+  "/uploads/pv11.jpg",
+  "/uploads/pv3.jpg",
+  "/uploads/pv4.jpg",
+  "/uploads/pv5.jpg",
+  "/uploads/rn10.jpg",
+  "/uploads/rn9.jpg",
+  "/uploads/ya0.png",
+];
 
 export default function GallerySection() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: NodeJS.Timeout;
 
     if (isAutoPlaying) {
       interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1))
-      }, 5000)
+        setCurrentIndex((prevIndex) => (prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1));
+      }, 5000);
     }
 
-    return () => clearInterval(interval)
-  }, [isAutoPlaying])
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
 
   const prevSlide = () => {
-    setIsAutoPlaying(false)
-    const isFirstSlide = currentIndex === 0
-    const newIndex = isFirstSlide ? galleryImages.length - 1 : currentIndex - 1
-    setCurrentIndex(newIndex)
-  }
+    setIsAutoPlaying(false);
+    const isFirstSlide = currentIndex === 0;
+    const newIndex = isFirstSlide ? galleryImages.length - 1 : currentIndex - 1;
+    setCurrentIndex(newIndex);
+  };
 
   const nextSlide = () => {
-    setIsAutoPlaying(false)
-    const isLastSlide = currentIndex === galleryImages.length - 1
-    const newIndex = isLastSlide ? 0 : currentIndex + 1
-    setCurrentIndex(newIndex)
-  }
+    setIsAutoPlaying(false);
+    const isLastSlide = currentIndex === galleryImages.length - 1;
+    const newIndex = isLastSlide ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+  };
 
   const goToSlide = (slideIndex: number) => {
-    setIsAutoPlaying(false)
-    setCurrentIndex(slideIndex)
-  }
+    setIsAutoPlaying(false);
+    setCurrentIndex(slideIndex);
+  };
 
   return (
     <section className="py-20 bg-[#1A1333] relative overflow-hidden">
@@ -133,6 +156,5 @@ export default function GallerySection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
-
