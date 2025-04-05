@@ -59,11 +59,11 @@ export default function GamesSection() {
   const [games, setGames] = useState<Game[]>(fallbackGames)
   const [glitch, setGlitch] = useState(false)
 
-  // Эффект ряби текста каждые 5 секунд
+  // Эффект мерцания текста каждые 5 секунд
   useEffect(() => {
     const interval = setInterval(() => {
       setGlitch(true)
-      setTimeout(() => setGlitch(false), 500) // Длительность эффекта ряби
+      setTimeout(() => setGlitch(false), 500) // Длительность эффекта
     }, 5000) // Каждые 5 секунд
 
     return () => clearInterval(interval)
@@ -219,36 +219,30 @@ export default function GamesSection() {
         </div>
       </div>
 
-      {/* CSS для эффекта ряби с белым шумом и искажением */}
+      {/* CSS для эффекта мерцания с белым шумом и искажением */}
       <style jsx>{`
         @keyframes glitch {
           0% {
-            transform: translate(0);
             text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.3), -0.05em 0 0 rgba(255, 255, 255, 0.3);
             opacity: 1;
           }
           20% {
-            transform: translate(-2px, 0);
             text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.5), -0.05em 0 0 rgba(255, 255, 255, 0.5);
             opacity: 0.8;
           }
           40% {
-            transform: translate(2px, 0);
             text-shadow: -0.05em 0 0 rgba(255, 255, 255, 0.3), 0.05em 0 0 rgba(255, 255, 255, 0.3);
             opacity: 0.9;
           }
           60% {
-            transform: translate(-1px, 0);
             text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.5), -0.05em 0 0 rgba(255, 255, 255, 0.5);
             opacity: 0.7;
           }
           80% {
-            transform: translate(1px, 0);
             text-shadow: -0.05em 0 0 rgba(255, 255, 255, 0.3), 0.05em 0 0 rgba(255, 255, 255, 0.3);
             opacity: 0.9;
           }
           100% {
-            transform: translate(0);
             text-shadow: 0.05em 0 0 rgba(255, 255, 255, 0.3), -0.05em 0 0 rgba(255, 255, 255, 0.3);
             opacity: 1;
           }
