@@ -1,76 +1,17 @@
 // components/games-section.tsx
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-
-interface Game {
-  title: string
-  description: string
-  players: string
-  tags: string[]
-  image: string
-  link: string
-  duration?: string
-  crop?: { x: number; y: number }
-  zoom?: number
-  croppedAreaPixels?: { x: number; y: number; width: number; height: number }
-  croppedImage?: string
-}
-
-interface SectionData {
-  games: Game[]
-  sectionTitle: string
-  sectionSubtitle: string
-}
-
-const fallbackGames: Game[] = [
-  {
-    title: "Коллекционер Игр",
-    description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
-    players: "6–12 человек",
-    tags: ["Мистика", "Детектив"],
-    image: "/uploads/ki2.jpg",
-    link: "/game/collector",
-    duration: "2 часа",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-  {
-    title: "Бермудский Треугольник",
-    description: "Фантастическая комедия на таинственном острове.",
-    players: "8–15 человек",
-    tags: ["Комедия", "Фантастика"],
-    image: "/uploads/ki3.jpg",
-    link: "/game/bermuda",
-    duration: "1.5 часа",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-  {
-    title: "Кланы Нью-Йорка",
-    description: "Гангстерская вечеринка с казино и интригами.",
-    players: "10–20 человек",
-    tags: ["Гангстеры", "Интриги"],
-    image: "/uploads/ki4.jpg",
-    link: "/game/new-york-clans",
-    duration: "2 часа",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-]
-
-const defaultSectionData: SectionData = {
-  games: fallbackGames,
-  sectionTitle: "Наши квест-спектакли",
-  sectionSubtitle: "Погрузитесь в историю, которую будете вспоминать всегда",
-}
+import { SectionData, defaultSectionData } from "@/lib/games-data"
 
 export default function GamesSection() {
   const [sectionData, setSectionData] = useState<SectionData>(defaultSectionData)
   const [glitch, setGlitch] = useState(false)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const particlesRef = useRef<Array<{ x: number; y: number; size: number; speed: number }>>([])
 
   const loadSectionData = () => {
     const savedSection = localStorage.getItem("sectionData")
@@ -82,7 +23,7 @@ export default function GamesSection() {
           tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
           duration: g.duration || "2 часа",
         }))
-        console.log("Загружены данные в GamesSection:", parsed) // Отладка
+        console.log("Загружены данные в GamesSection:", parsed)
         setSectionData({
           games: enrichedGames,
           sectionTitle: parsed.sectionTitle || defaultSectionData.sectionTitle,
@@ -94,7 +35,6 @@ export default function GamesSection() {
       }
     }
 
-    // Совместимость с предыдущей версией: загружаем только игры
     const savedGames = localStorage.getItem("savedGames")
     if (savedGames) {
       try {
@@ -104,7 +44,7 @@ export default function GamesSection() {
           tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
           duration: g.duration || "2 часа",
         }))
-        console.log("Загружены игры в GamesSection:", enrichedGames) // Отладка
+        console.log("Загружены игры в GamesSection:", enrichedGames)
         setSectionData((prev) => ({
           ...prev,
           games: enrichedGames,
@@ -116,12 +56,10 @@ export default function GamesSection() {
   }
 
   useEffect(() => {
-    // Загружаем данные при монтировании
     loadSectionData()
 
-    // Обработчик события gamesDataUpdated
     const handleGamesDataUpdated = () => {
-      console.log("Событие gamesDataUpdated получено") // Отладка
+      console.log("Событие gamesDataUpdated получено")
       loadSectionData()
     }
 
@@ -144,6 +82,76 @@ export default function GamesSection() {
     return () => clearInterval(interval)
   }, [])
 
+  // Эффект для частиц и линий
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth
+      canvas.height = canvas.parentElement?.clientHeight || window.innerHeight
+    }
+
+    resizeCanvas()
+    window.addEventListener("resize", resizeCanvas)
+
+    // Инициализация частиц
+    const particleCount = 12
+    particlesRef.current = Array.from({ length: particleCount }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 8 + 4,
+      speed: Math.random() * 0.5 + 0.2,
+    }))
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Обновление позиций частиц
+      particlesRef.current.forEach((particle) => {
+        particle.y -= particle.speed
+        if (particle.y < 0) {
+          particle.y = canvas.height
+          particle.x = Math.random() * canvas.width
+        }
+
+        // Рисуем частицы
+        ctx.beginPath()
+        ctx.arc(particle.x, particle.y, particle.size / 2, 0, Math.PI * 2)
+        ctx.fillStyle = "rgba(147, 51, 234, 0.5)"
+        ctx.fill()
+      })
+
+      // Рисуем неоновые линии между частицами
+      ctx.strokeStyle = "rgba(147, 51, 234, 0.3)"
+      ctx.lineWidth = 1
+      for (let i = 0; i < particlesRef.current.length; i++) {
+        for (let j = i + 1; j < particlesRef.current.length; j++) {
+          const p1 = particlesRef.current[i]
+          const p2 = particlesRef.current[j]
+          const distance = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+          if (distance < 200) {
+            ctx.beginPath()
+            ctx.moveTo(p1.x, p1.y)
+            ctx.lineTo(p2.x, p2.y)
+            ctx.stroke()
+          }
+        }
+      }
+
+      requestAnimationFrame(animate)
+    }
+
+    animate()
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas)
+    }
+  }, [])
+
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
       <div
@@ -157,24 +165,10 @@ export default function GamesSection() {
         }`}
       />
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className={`absolute rounded-full bg-purple-500 particle transition-all duration-200 ${
-              glitch ? "animate-glitch-bg" : ""
-            }`}
-            style={{
-              width: `${Math.random() * 8 + 4}px`,
-              height: `${Math.random() * 8 + 4}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animation: `float ${Math.random() * 12 + 10}s linear infinite`,
-              animationDelay: `${Math.random() * 6}s`,
-            }}
-          />
-        ))}
-      </div>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 pointer-events-none z-0"
+      />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
