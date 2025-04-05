@@ -53,7 +53,7 @@ const initialGamesData: Game[] = [
   {
     title: "Коллекционер Игр",
     description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
-    players: "6-12 человек",
+    players: "6–12 человек",
     tags: "Мистика, Детектив",
     image: "/uploads/ki2.jpg",
     link: "/game/collector",
@@ -63,7 +63,7 @@ const initialGamesData: Game[] = [
   {
     title: "Бермудский Треугольник",
     description: "Фантастическая комедия на таинственном острове.",
-    players: "8-15 человек",
+    players: "8–15 человек",
     tags: "Комедия, Фантастика",
     image: "/uploads/ki3.jpg",
     link: "/game/bermuda",
@@ -73,30 +73,10 @@ const initialGamesData: Game[] = [
   {
     title: "Кланы Нью-Йорка",
     description: "Гангстерская вечеринка с казино и интригами.",
-    players: "10-20 человек",
+    players: "10–20 человек",
     tags: "Гангстеры, Интриги",
     image: "/uploads/ki4.jpg",
     link: "/game/new-york-clans",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-  {
-    title: "Петля Времени",
-    description: "Путешествие во времени, алхимия и загадочная хижина.",
-    players: "6-12 человек",
-    tags: "Стимпанк, Головоломки",
-    image: "/uploads/ki5.jpg",
-    link: "/game/time-loop",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-  {
-    title: "Яхта",
-    description: "Исторический триллер на послевоенной яхте с шпионажем и драгоценностями.",
-    players: "8-16 человек",
-    tags: "Детектив, Интриги",
-    image: "/uploads/ki6.jpg",
-    link: "/game/yacht",
     crop: { x: 0, y: 0 },
     zoom: 1,
   },
@@ -259,16 +239,20 @@ export default function GamesEditor() {
             </div>
             <div className="mt-2">
               <label className="block mb-1 font-medium text-zinc-300">Превью</label>
-              <img
-                src={game.image}
-                alt="превью"
-                className="w-40 h-32 object-cover rounded border border-purple-500/30"
-                style={{
-                  objectPosition: game.crop
-                    ? `${game.crop.x}px ${game.crop.y}px`
-                    : "center",
-                }}
-              />
+              <div className="relative w-1/3 h-64">
+                <Image
+                  src={game.image}
+                  alt="превью"
+                  fill
+                  className="object-cover rounded border border-purple-500/30"
+                  style={{
+                    objectPosition: game.crop
+                      ? `${game.crop.x}px ${game.crop.y}px`
+                      : "center",
+                    transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
