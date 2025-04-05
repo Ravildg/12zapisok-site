@@ -130,7 +130,9 @@ const cropImage = async (
         targetHeight
       )
 
-      resolve(canvas.toDataURL("image/jpeg", 0.9))
+      const croppedImage = canvas.toDataURL("image/jpeg", 0.9)
+      console.log("Обрезанное изображение создано:", croppedImage) // Отладка
+      resolve(croppedImage)
     }
     img.onerror = () => {
       console.error("Ошибка загрузки изображения:", imageSrc)
@@ -148,6 +150,7 @@ export default function GamesEditor() {
       try {
         const parsed = JSON.parse(saved)
         if (Array.isArray(parsed)) {
+          console.log("Загружены данные из localStorage:", parsed) // Отладка
           setGamesData(parsed)
         }
       } catch (error) {
@@ -175,12 +178,14 @@ export default function GamesEditor() {
   }
 
   const onCropChange = (index: number, crop: Point) => {
+    console.log("onCropChange:", { index, crop }) // Отладка
     const updated = [...gamesData]
     updated[index] = { ...updated[index], crop }
     setGamesData(updated)
   }
 
   const onZoomChange = (index: number, zoom: number) => {
+    console.log("onZoomChange:", { index, zoom }) // Отладка
     const updated = [...gamesData]
     updated[index] = { ...updated[index], zoom }
     setGamesData(updated)
@@ -200,7 +205,6 @@ export default function GamesEditor() {
             gamesData[index].zoom || 1
           )
           updated[index].croppedImage = croppedImage
-          console.log("Изображение обрезано:", croppedImage) // Отладка
         }
       } catch (error) {
         console.error("Ошибка обрезки изображения:", error)
@@ -212,6 +216,7 @@ export default function GamesEditor() {
   )
 
   const handleSave = () => {
+    console.log("Сохранение данных:", gamesData) // Отладка
     localStorage.setItem("savedGames", JSON.stringify(gamesData))
     alert("Игры сохранены!")
     window.dispatchEvent(new Event("gamesDataUpdated"))
@@ -313,6 +318,8 @@ export default function GamesEditor() {
                 onCropComplete={(croppedArea, croppedAreaPixels) =>
                   onCropComplete(index, croppedArea, croppedAreaPixels)
                 }
+                restrictPosition={false}
+                showGrid={true}
               />
             </div>
             <div className="mt-2">
