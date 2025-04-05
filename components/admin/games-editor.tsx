@@ -17,7 +17,7 @@ interface Game {
   crop?: Point
   zoom?: number
   croppedAreaPixels?: Area
-  croppedImage?: string // Добавляем поле для хранения обрезанного изображения
+  croppedImage?: string
 }
 
 const availableImages = [
@@ -88,7 +88,11 @@ const initialGamesData: Game[] = [
   },
 ]
 
-const cropImage = async (imageSrc: string, crop: { x: number; y: number; width: number; height: number }) => {
+const cropImage = async (
+  imageSrc: string,
+  crop: { x: number; y: number; width: number; height: number },
+  zoom: number
+) => {
   return new Promise<string>((resolve) => {
     const img = new Image()
     img.crossOrigin = "anonymous"
@@ -98,23 +102,34 @@ const cropImage = async (imageSrc: string, crop: { x: number; y: number; width: 
       const ctx = canvas.getContext("2d")
       if (!ctx) return
 
-      canvas.width = crop.width
-      canvas.height = crop.height
+      // Устанавливаем размеры canvas равными размерам превью (w-1/3 h-64)
+      const targetWidth = 384 // Примерное значение для w-1/3 на экране 1152px
+      const targetHeight = 256 // h-64 = 256px
+      canvas.width = targetWidth
+      canvas.height = targetHeight
+
+      // Масштабируем координаты обрезки с учётом zoom
+      const scaledWidth = crop.width / zoom
+      const scaledHeight = crop.height / zoom
+      const scaledX = crop.x / zoom
+      const scaledY = crop.y / zoom
+
+      // Рисуем обрезанное изображение на canvas
       ctx.drawImage(
         img,
-        crop.x,
-        crop.y,
-        crop.width,
-        crop.height,
+        scaledX,
+        scaledY,
+        scaledWidth,
+        scaledHeight,
         0,
         0,
-        crop.width,
-        crop.height
+        targetWidth,
+        targetHeight
       )
 
       resolve(canvas.toDataURL("image/jpeg"))
     }
-    img.onerror = () => resolve(imageSrc) // Если не удалось загрузить, возвращаем исходное изображение
+    img.onerror = () => resolve(imageSrc)
   })
 }
 
@@ -146,15 +161,37 @@ export default function GamesEditor() {
     setGamesData(updated)
   }
 
-  const onCropChange = (index: number, crop: Point) => {
+  const onCropChange = async (index: number, crop: Point) => {
     const updated = [...gamesData]
     updated[index] = { ...updated[index], crop }
+
+    // Обновляем обрезанное изображение в реальном времени
+    if (updated[index].croppedAreaPixels) {
+      const croppedImage = await cropImage(
+        updated[index].image,
+        updated[index].croppedAreaPixels!,
+        updated[index].zoom || 1
+      )
+      updated[index].croppedImage = croppedImage
+    }
+
     setGamesData(updated)
   }
 
-  const onZoomChange = (index: number, zoom: number) => {
+  const onZoomChange = async (index: number, zoom: number) => {
     const updated = [...gamesData]
     updated[index] = { ...updated[index], zoom }
+
+    // Обновляем обрезанное изображение в реальном времени
+    if (updated[index].croppedAreaPixels) {
+      const croppedImage = await cropImage(
+        updated[index].image,
+        updated[index].croppedAreaPixels!,
+        zoom
+      )
+      updated[index].croppedImage = croppedImage
+    }
+
     setGamesData(updated)
   }
 
@@ -165,7 +202,11 @@ export default function GamesEditor() {
 
       // Выполняем обрезку через canvas и сохраняем результат
       if (croppedAreaPixels) {
-        const croppedImage = await cropImage(gamesData[index].image, croppedAreaPixels)
+        const croppedImage = await cropImage(
+          gamesData[index].image,
+          croppedAreaPixels,
+          gamesData[index].zoom || 1
+        )
         updated[index].croppedImage = croppedImage
       }
 
@@ -305,13 +346,6 @@ export default function GamesEditor() {
                     alt="превью"
                     fill
                     className="object-cover rounded border border-purple-500/30"
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: game.crop
-                        ? `${game.crop.x}px ${game.crop.y}px`
-                        : "center",
-                      transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
-                    }}
                   />
                 )}
               </div>
