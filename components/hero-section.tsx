@@ -1,47 +1,19 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { ChevronRight, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronRight, Sparkles } from "lucide-react";
 
-type HeroData = {
-  title: string
-  subtitle: string
-  description: string
-  image: string
-}
-
-const fallbackData: HeroData = {
+// Статические данные для Hero
+const heroData = {
   title: 'Квест-кафе "12 записок"',
   subtitle: "Погрузи команду в игру",
   description:
     "Квест-спектакли с живыми актёрами для взрослых. Каждый сюжет — как фильм, в котором вы главные герои. Проведите встречу, которую будут вспоминать.",
-  image: "/placeholder.svg",
-}
+  image: "/uploads/ki5.jpg", // Фоновая картинка
+};
 
 export default function HeroSection() {
-  const [heroData, setHeroData] = useState<HeroData>(fallbackData)
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("heroData")
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        // подстраховка на случай битых данных
-        setHeroData({
-          title: parsed.title || fallbackData.title,
-          subtitle: parsed.subtitle || fallbackData.subtitle,
-          description: parsed.description || fallbackData.description,
-          image: parsed.image || fallbackData.image,
-        })
-      }
-    } catch (err) {
-      console.error("Ошибка загрузки heroData:", err)
-      setHeroData(fallbackData)
-    }
-  }, [])
-
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
       <div
@@ -123,5 +95,5 @@ export default function HeroSection() {
 
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0F0A1E] to-transparent" />
     </section>
-  )
+  );
 }
