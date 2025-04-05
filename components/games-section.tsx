@@ -111,7 +111,7 @@ export default function GamesSection() {
                 index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
               } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all hover:shadow-[0_0_20px_#a855f7] group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem]`}
             >
-              <div className="md:w-1/2 w-full h-64 relative">
+              <div className="md:w-1/2 w-full h-64 relative -top-4">
                 <Image
                   src={game.image}
                   alt={game.title}
@@ -135,18 +135,12 @@ export default function GamesSection() {
                     </span>
                   ))}
                 </div>
-                <div className="pt-4 flex gap-3">
+                <div className="pt-4">
                   <Button
                     variant="secondary"
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
                   >
-                    Выбрать игру
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 bg-transparent text-white border border-white/50 hover:bg-white/10"
-                  >
-                    Как это работает
+                    Подробнее
                   </Button>
                 </div>
               </div>
