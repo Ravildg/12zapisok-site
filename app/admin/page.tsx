@@ -13,7 +13,6 @@ export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const router = useRouter()
 
-  // Проверка авторизации при загрузке
   useEffect(() => {
     const authStatus = localStorage.getItem("isAdmin") === "true"
     setIsAuthenticated(authStatus)
@@ -21,7 +20,7 @@ export default function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === "admin123") {
+    if (password === "admin123") { // В будущем замените на безопасную авторизацию
       localStorage.setItem("isAdmin", "true")
       setIsAuthenticated(true)
     } else {
@@ -33,9 +32,9 @@ export default function AdminPage() {
     localStorage.removeItem("isAdmin")
     setIsAuthenticated(false)
     setPassword("")
+    router.push("/") // Перенаправление на главную страницу
   }
 
-  // Если пользователь не авторизован, показываем форму логина
   if (!isAuthenticated) {
     return (
       <div className="max-w-md mx-auto p-6 mt-20 bg-[#0F0A1E] min-h-screen flex items-center justify-center">
@@ -64,7 +63,6 @@ export default function AdminPage() {
     )
   }
 
-  // Если пользователь авторизован, показываем админ-панель
   return (
     <div className="min-h-screen bg-[#0F0A1E] p-6">
       <div className="max-w-4xl mx-auto space-y-12">
@@ -78,25 +76,21 @@ export default function AdminPage() {
           </button>
         </div>
 
-        {/* Главная секция */}
         <section className="p-4 bg-[#1F1833] rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4 text-purple-300">Главная секция</h2>
           <HeroEditor />
         </section>
 
-        {/* Раздел Игры */}
         <section className="p-4 bg-[#1F1833] rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4 text-purple-300">Игры</h2>
           <GamesEditor />
         </section>
 
-        {/* Раздел Поводы */}
         <section className="p-4 bg-[#1F1833] rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4 text-purple-300">Поводы</h2>
           <OccasionsEditor />
         </section>
 
-        {/* Раздел Как это работает */}
         <section className="p-4 bg-[#1F1833] rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4 text-purple-300">Как это работает</h2>
           <HowItWorksEditor />
