@@ -1,25 +1,70 @@
 "use client"
 
-import Image from "next/image"
+import { useEffect, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
 
-const games = [
+interface Game {
+  title: string
+  description: string
+  players: string
+  tags: string[]
+  image: string
+  link: string
+  duration?: string
+}
+
+const fallbackGames: Game[] = [
   {
-    title: "Хранители волшебства",
-    description: "Магическая история, где дети раскрывают тайны старого замка.",
-    image: "/games/guardians.jpg",
-    link: "/games/guardians",
+    title: "Коллекционер Игр",
+    description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
+    players: "6–12 человек",
+    tags: ["Мистика", "Детектив"],
+    image: "/uploads/ki2.jpg",
+    link: "/game/collector",
+    duration: "2 часа",
   },
   {
-    title: "Петля времени",
-    description: "Фантастическое приключение со сдвигами реальности и загадками.",
-    image: "/games/timeloop.jpg",
-    link: "/games/timeloop",
+    title: "Бермудский Треугольник",
+    description: "Фантастическая комедия на таинственном острове.",
+    players: "8–15 человек",
+    tags: ["Комедия", "Фантастика"],
+    image: "/uploads/ki3.jpg",
+    link: "/game/bermuda",
+    duration: "1.5 часа",
   },
-  // добавь остальные игры по аналогии...
+  {
+    title: "Кланы Нью-Йорка",
+    description: "Гангстерская вечеринка с казино и интригами.",
+    players: "10–20 человек",
+    tags: ["Гангстеры", "Интриги"],
+    image: "/uploads/ki4.jpg",
+    link: "/game/new-york-clans",
+    duration: "2 часа",
+  },
 ]
 
 export default function GamesSection() {
+  const [games, setGames] = useState<Game[]>(fallbackGames)
+
+  useEffect(() => {
+    const saved = localStorage.getItem("savedGames")
+    if (saved) {
+      try {
+        const parsed: Game[] = JSON.parse(saved)
+        const enriched = parsed.map((g) => ({
+          ...g,
+          tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t) => t.trim()),
+          duration: g.duration || "2 часа",
+        }))
+        setGames(enriched)
+      } catch (e) {
+        console.warn("Ошибка загрузки savedGames:", e)
+      }
+    }
+  }, [])
+
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
       {/* Градиенты и частицы */}
@@ -49,16 +94,16 @@ export default function GamesSection() {
           </span>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-12">
           {games.map((game, index) => (
             <Link
               key={game.title}
               href={game.link}
               className={`flex flex-col md:flex-row ${
                 index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              } items-center bg-[#1B1530] rounded-xl overflow-hidden transition-all hover:shadow-[0_0_20px_#a855f7] group border border-transparent hover:border-purple-500/40 min-h-[12rem]`}
+              } items-center bg-[#1B1530] rounded-xl overflow-hidden transition-all hover:shadow-[0_0_20px_#a855f7] group border border-transparent hover:border-purple-500/40 min-h-[16rem]`}
             >
-              <div className="md:w-1/2 w-full h-48 md:h-60 relative">
+              <div className="md:w-1/2 w-full h-64 relative">
                 <Image
                   src={game.image}
                   alt={game.title}
@@ -66,9 +111,32 @@ export default function GamesSection() {
                   className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <div className="md:w-1/2 w-full p-4 md:p-6 space-y-2">
-                <h3 className="text-xl md:text-2xl font-bold text-white">{game.title}</h3>
-                <p className="text-zinc-300 text-sm md:text-base">{game.description}</p>
+              <div className="md:w-1/2 w-full p-6 md:p-10 space-y-3">
+                <h3 className="text-2xl font-bold text-white group-hover:text-purple-400 transition-colors">
+                  {game.title}
+                </h3>
+                <p className="text-zinc-300">{game.description}</p>
+                <div className="text-sm text-purple-300">
+                  <span>{game.players}</span> · <span>{game.duration}</span>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  {game.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-1 text-xs rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/30"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="pt-4">
+                  <Button
+                    variant="secondary"
+                    className="w-full bg-purple-600/20 text-purple-300 hover:bg-purple-600/30"
+                  >
+                    Подробнее
+                  </Button>
+                </div>
               </div>
             </Link>
           ))}
