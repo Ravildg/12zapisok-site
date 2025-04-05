@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { Facebook, Instagram, Mail, MapPin, Phone, Twitter, Sparkles } from "lucide-react"
+import Link from "next/link";
+import { Mail, MapPin, Phone, Sparkles } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -22,27 +22,16 @@ export default function Footer() {
 
             <div className="flex space-x-4">
               <Link
-                href="#"
+                href="https://vk.com/12zapisoknn"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full bg-[#1A1333] flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-colors"
               >
-                <Instagram className="h-4 w-4" />
-                <span className="sr-only">Instagram</span>
-              </Link>
-
-              <Link
-                href="#"
-                className="w-8 h-8 rounded-full bg-[#1A1333] flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-colors"
-              >
-                <Facebook className="h-4 w-4" />
-                <span className="sr-only">Facebook</span>
-              </Link>
-
-              <Link
-                href="#"
-                className="w-8 h-8 rounded-full bg-[#1A1333] flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-colors"
-              >
-                <Twitter className="h-4 w-4" />
-                <span className="sr-only">Twitter</span>
+                {/* Кастомная иконка ВКонтакте */}
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22.5 4.5C22.5 2.57 20.93 1 19 1H5C3.07 1 1.5 2.57 1.5 4.5V19.5C1.5 21.43 3.07 23 5 23H19C20.93 23 22.5 21.43 22.5 19.5V4.5ZM18.85 17.25H16.77C16.27 17.25 15.93 16.91 15.75 16.5C15.62 16.17 15.56 15.83 15.56 15.5H17.25C17.66 15.5 18 15.16 18 14.75V14.25C18 13.84 17.66 13.5 17.25 13.5H15.56C15.56 12.67 15.75 11.83 16.13 11C16.5 10.17 17.06 9.5 17.81 9.5H18.85C19.26 9.5 19.6 9.84 19.6 10.25V11.75C19.6 12.16 19.26 12.5 18.85 12.5H18C17.59 12.5 17.25 12.84 17.25 13.25V13.75C17.25 14.16 17.59 14.5 18 14.5H18.85C19.26 14.5 19.6 14.84 19.6 15.25V16.75C19.6 17.16 19.26 17.5 18.85 17.5V17.25ZM13.5 17.25H11.75C11.34 17.25 11 16.91 11 16.5V10.25C11 9.84 11.34 9.5 11.75 9.5H13.5C13.91 9.5 14.25 9.84 14.25 10.25V16.5C14.25 16.91 13.91 17.25 13.5 17.25ZM9.25 17.25H8C7.59 17.25 7.25 16.91 7.25 16.5V13.5H5.5C5.09 13.5 4.75 13.16 4.75 12.75V11.25C4.75 10.84 5.09 10.5 5.5 10.5H7.25V9.5C7.25 9.09 7.59 8.75 8 8.75H9.25C9.66 8.75 10 9.09 10 9.5V16.5C10 16.91 9.66 17.25 9.25 17.25Z" />
+                </svg>
+                <span className="sr-only">ВКонтакте</span>
               </Link>
             </div>
           </div>
@@ -120,6 +109,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
-
