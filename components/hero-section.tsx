@@ -47,7 +47,7 @@ export default function HeroSection() {
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-block mb-4">
             <span className="inline-block px-4 py-1 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-purple-300 text-sm font-medium border border-purple-500/30 animate-pulse">
-              Новая реальность ждёт тебя
+              Новая история ждёт тебя
             </span>
           </div>
 
@@ -73,14 +73,14 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="#games">
+            <Link href="#игры">
               <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg px-8 py-6 h-auto shadow-[0_0_15px_rgba(138,43,226,0.5)] hover:shadow-[0_0_20px_rgba(138,43,226,0.7)] transition-all duration-300 group">
                 Выбрать игру
                 <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
 
-            <Link href="#how-it-works">
+            <Link href="#как-это-работает">
               <Button
                 variant="outline"
                 className="border-purple-500 text-purple-300 hover:bg-purple-500/20 text-lg px-8 py-6 h-auto group"
