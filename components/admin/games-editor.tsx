@@ -97,10 +97,13 @@ const cropImage = async (
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.src = imageSrc
+
     img.onload = () => {
+      console.log("Изображение загружено:", imageSrc) // Отладка
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       if (!ctx) {
+        console.error("Не удалось получить контекст canvas")
         reject(new Error("Не удалось получить контекст canvas"))
         return
       }
@@ -116,6 +119,8 @@ const cropImage = async (
       const scaledHeight = crop.height / zoom
       const scaledX = crop.x / zoom
       const scaledY = crop.y / zoom
+
+      console.log("Параметры обрезки:", { scaledX, scaledY, scaledWidth, scaledHeight, zoom }) // Отладка
 
       // Рисуем обрезанное изображение на canvas
       ctx.drawImage(
@@ -134,6 +139,7 @@ const cropImage = async (
       console.log("Обрезанное изображение создано:", croppedImage) // Отладка
       resolve(croppedImage)
     }
+
     img.onerror = () => {
       console.error("Ошибка загрузки изображения:", imageSrc)
       reject(new Error("Не удалось загрузить изображение"))
@@ -205,6 +211,7 @@ export default function GamesEditor() {
             gamesData[index].zoom || 1
           )
           updated[index].croppedImage = croppedImage
+          console.log("Состояние после обрезки:", updated[index]) // Отладка
         }
       } catch (error) {
         console.error("Ошибка обрезки изображения:", error)
@@ -307,7 +314,7 @@ export default function GamesEditor() {
 
           <div>
             <label className="block mb-1 font-medium text-zinc-300">Обрезка изображения</label>
-            <div className="relative w-1/3 h-[216px]">
+            <div className="relative w-1/3 h-[216px] bg-gray-800">
               <Cropper
                 image={game.image}
                 crop={game.crop || { x: 0, y: 0 }}
@@ -320,6 +327,7 @@ export default function GamesEditor() {
                 }
                 restrictPosition={false}
                 showGrid={true}
+                cropSize={{ width: 384, height: 216 }}
               />
             </div>
             <div className="mt-2">
