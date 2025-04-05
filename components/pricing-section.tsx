@@ -1,8 +1,21 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Sparkles } from "lucide-react"
+"use client";
 
-const pricingOptions = [
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, Sparkles } from "lucide-react";
+
+// Типизация для опций тарифа
+type PricingOption = {
+  id: number;
+  title: string;
+  description: string;
+  price: string;
+  features: string[];
+  popular: boolean;
+};
+
+// Статические данные для тарифов
+const pricingOptions: PricingOption[] = [
   {
     id: 1,
     title: "Стандарт",
@@ -25,7 +38,7 @@ const pricingOptions = [
     features: [
       "До 12 участников",
       "3-4 актёра",
-      "Расширенный набор реквизита и эфектов",
+      "Расширенный набор реквизита и эффектов",
       "Продолжительность 2,5 часа",
       "Профессиональная фотосъёмка",
       "Элементы костюма каждому игроку",
@@ -40,20 +53,19 @@ const pricingOptions = [
     price: "от 40 000 ₽",
     features: [
       "До 25 участников",
-      "до 3-4 актёра",
+      "3-4 актёра", // Исправил повторение "до 3-4 актёра"
       "Премиум реквизит и декорации",
       "Продолжительность 2,5 часа",
       "Профессиональная фотосъёмка",
-      "Фотозона"
-      "Подарок на выбор"
+      "Фотозона", // Добавил запятую
+      "Подарок на выбор", // Добавил запятую
       "Индивидуальная адаптация сценария",
-      "Живая музыка во время игры"
+      "Живая музыка во время игры",
       "Личный куратор",
-
     ],
     popular: false,
   },
-]
+];
 
 export default function PricingSection() {
   return (
@@ -129,6 +141,5 @@ export default function PricingSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
-
