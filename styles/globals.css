@@ -167,12 +167,61 @@ body {
   }
 }
 
+/* Эффект белого шума и искажения в стиле "Матрицы" */
+@keyframes matrix-glitch {
+  0% {
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), 0 0 4px rgba(0, 255, 0, 0.3);
+    transform: translate(0, 0);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  20% {
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.8), 2px 2px 6px rgba(0, 255, 0, 0.5);
+    transform: translate(2px, -1px);
+    opacity: 0.9;
+    filter: brightness(1.2);
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+  }
+  40% {
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), -2px -2px 4px rgba(0, 255, 0, 0.3);
+    transform: translate(-2px, 1px);
+    opacity: 0.7;
+    filter: brightness(0.8);
+    clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 90%);
+  }
+  60% {
+    text-shadow: 0 0 6px rgba(255, 255, 255, 1), 1px 1px 8px rgba(0, 255, 0, 0.7);
+    transform: translate(1px, 0);
+    opacity: 0.8;
+    filter: brightness(1.5);
+    clip-path: polygon(0 0, 100% 10%, 100% 90%, 0 100%);
+  }
+  80% {
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), -1px -1px 4px rgba(0, 255, 0, 0.3);
+    transform: translate(-1px, 0);
+    opacity: 0.9;
+    filter: brightness(1);
+    clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 90%);
+  }
+  100% {
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), 0 0 4px rgba(0, 255, 0, 0.3);
+    transform: translate(0, 0);
+    opacity: 1;
+    filter: brightness(1);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
 .animate-glitch {
   animation: glitch 1.5s linear infinite;
 }
 
 .animate-glitch-bg {
   animation: glitch-bg 1.5s linear infinite;
+}
+
+.animate-matrix-glitch {
+  animation: matrix-glitch 1.5s linear infinite;
 }
 
 .particle {
