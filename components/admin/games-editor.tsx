@@ -50,11 +50,9 @@ const cropImage = async (
     img.src = imageSrc
 
     img.onload = () => {
-      console.log("Изображение загружено:", imageSrc)
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       if (!ctx) {
-        console.error("Не удалось получить контекст canvas")
         reject(new Error("Не удалось получить контекст canvas"))
         return
       }
@@ -69,8 +67,6 @@ const cropImage = async (
       const scaledX = crop.x / zoom
       const scaledY = crop.y / zoom
 
-      console.log("Параметры обрезки:", { scaledX, scaledY, scaledWidth, scaledHeight, zoom })
-
       ctx.drawImage(
         img,
         scaledX,
@@ -84,14 +80,10 @@ const cropImage = async (
       )
 
       const croppedImage = canvas.toDataURL("image/jpeg", 0.9)
-      console.log("Обрезанное изображение создано:", croppedImage)
       resolve(croppedImage)
     }
 
-    img.onerror = () => {
-      console.error("Ошибка загрузки изображения:", imageSrc)
-      reject(new Error("Не удалось загрузить изображение"))
-    }
+    img.onerror = () => reject(new Error("Не удалось загрузить изображение"))
   })
 }
 
@@ -105,23 +97,13 @@ export default function GamesEditor() {
         const parsed = JSON.parse(saved)
         const normalizedGames = parsed.games.map((game: Game) => ({
           ...game,
-          tags: Array.isArray(game.tags)
-            ? game.tags
-            : game.tags.split(",").map((t: string) => t.trim()),
+          tags: Array.isArray(game.tags) ? game.tags : game.tags.split(",").map((t: string) => t.trim()),
         }))
-        console.log("Загружены данные из localStorage в GamesEditor:", parsed)
-        console.log("Количество игр в parsed.games:", parsed.games.length)
         setSectionData({ ...parsed, games: normalizedGames })
       } catch (error) {
-        console.warn("Ошибка загрузки sectionData:", error)
-        console.log("Используются начальные данные:", defaultSectionData)
-        console.log("Количество игр в defaultSectionData:", defaultSectionData.games.length)
+        console.warn("Ошибка загрузки данных из localStorage:", error)
         setSectionData(defaultSectionData)
       }
-    } else {
-      console.log("Данные из localStorage отсутствуют, используются начальные данные:", defaultSectionData)
-      console.log("Количество игр в defaultSectionData:", defaultSectionData.games.length)
-      setSectionData(defaultSectionData)
     }
   }, [])
 
@@ -129,9 +111,7 @@ export default function GamesEditor() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: "sectionTitle" | "sectionSubtitle"
   ) => {
-    const value = e.target.value
-    console.log(`Изменение ${field}:`, value)
-    setSectionData((prev) => ({ ...prev, [field]: value }))
+    setSectionData((prev) => ({ ...prev, [field]: e.target.value }))
   }
 
   const handleGameChange = (
@@ -140,11 +120,9 @@ export default function GamesEditor() {
     field: keyof Game
   ) => {
     const value = e.target.value
-    console.log(`Изменение поля ${field} для игры ${index}:`, value)
     const updatedGames = [...sectionData.games]
     updatedGames[index] = { ...updatedGames[index], [field]: value }
     if (field === "image") {
-      console.log("Сброс параметров обрезки для игры", index)
       updatedGames[index].croppedImage = undefined
       updatedGames[index].crop = { x: 0, y: 0 }
       updatedGames[index].zoom = 1
@@ -154,14 +132,12 @@ export default function GamesEditor() {
   }
 
   const onCropChange = (index: number, crop: Point) => {
-    console.log("onCropChange:", { index, crop })
     const updatedGames = [...sectionData.games]
     updatedGames[index] = { ...updatedGames[index], crop }
     setSectionData((prev) => ({ ...prev, games: updatedGames }))
   }
 
   const onZoomChange = (index: number, zoom: number) => {
-    console.log("onZoomChange:", { index, zoom })
     const updatedGames = [...sectionData.games]
     updatedGames[index] = { ...updatedGames[index], zoom }
     setSectionData((prev) => ({ ...prev, games: updatedGames }))
@@ -169,7 +145,6 @@ export default function GamesEditor() {
 
   const onCropComplete = useCallback(
     async (index: number, croppedArea: Area, croppedAreaPixels: Area) => {
-      console.log("onCropComplete called:", { index, croppedArea, croppedAreaPixels })
       const updatedGames = [...sectionData.games]
       updatedGames[index] = { ...updatedGames[index], croppedAreaPixels }
 
@@ -181,7 +156,6 @@ export default function GamesEditor() {
             sectionData.games[index].zoom || 1
           )
           updatedGames[index].croppedImage = croppedImage
-          console.log("Состояние после обрезки:", updatedGames[index])
         }
       } catch (error) {
         console.error("Ошибка обрезки изображения:", error)
@@ -192,31 +166,48 @@ export default function GamesEditor() {
     [sectionData]
   )
 
+  const addGame = () => {
+    setSectionData((prev) => ({
+      ...prev,
+      games: [
+        ...prev.games,
+        {
+          title: "",
+          description: "",
+          players: "",
+          duration: "",
+          tags: [],
+          link: "",
+          image: availableImages[0],
+          crop: { x: 0, y: 0 },
+          zoom: 1,
+        },
+      ],
+    }))
+  }
+
+  const removeGame = (index: number) => {
+    setSectionData((prev) => ({
+      ...prev,
+      games: prev.games.filter((_, i) => i !== index),
+    }))
+  }
+
   const handleSave = () => {
     const normalizedGames = sectionData.games.map((game) => ({
       ...game,
-      tags: Array.isArray(game.tags)
-        ? game.tags
-        : game.tags.split(",").map((t) => t.trim()),
+      tags: Array.isArray(game.tags) ? game.tags : game.tags.split(",").map((t) => t.trim()),
     }))
-
     const dataToSave = { ...sectionData, games: normalizedGames }
-    console.log("Сохранение данных:", dataToSave)
-    console.log("Количество игр при сохранении:", normalizedGames.length)
     try {
       localStorage.setItem("sectionData", JSON.stringify(dataToSave))
-      localStorage.setItem("savedGames", JSON.stringify(normalizedGames))
-      console.log("Данные успешно сохранены в localStorage")
       alert("Данные сохранены!")
       window.dispatchEvent(new Event("gamesDataUpdated"))
-      console.log("Событие gamesDataUpdated отправлено")
     } catch (error) {
-      console.error("Ошибка сохранения данных в localStorage:", error)
-      alert("Ошибка при сохранении данных. Проверьте консоль для подробностей.")
+      console.error("Ошибка сохранения данных:", error)
+      alert("Ошибка при сохранении данных")
     }
   }
-
-  console.log("Окончательное количество игр в sectionData.games (GamesEditor):", sectionData.games.length)
 
   return (
     <div className="space-y-6">
@@ -246,7 +237,15 @@ export default function GamesEditor() {
 
       {sectionData.games.map((game, index) => (
         <div key={index} className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4">
-          <h3 className="text-lg font-bold text-white">Игра {index + 1}</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-bold text-white">Игра {index + 1}</h3>
+            <button
+              onClick={() => removeGame(index)}
+              className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
+            >
+              Удалить
+            </button>
+          </div>
 
           <div>
             <label className="block mb-1 font-medium text-zinc-300">Название</label>
@@ -329,7 +328,7 @@ export default function GamesEditor() {
               <Cropper
                 image={game.image}
                 crop={game.crop || { x: 0, y: 0 }}
-                zoom={ Kaufgame.zoom || 1}
+                zoom={game.zoom || 1} // Исправлено с Kaufgame.zoom
                 aspect={16 / 9}
                 onCropChange={(crop) => onCropChange(index, crop)}
                 onZoomChange={(zoom) => onZoomChange(index, zoom)}
@@ -376,12 +375,20 @@ export default function GamesEditor() {
         </div>
       ))}
 
-      <button
-        onClick={handleSave}
-        className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded hover:from-purple-700 hover:to-pink-700"
-      >
-        Сохранить все данные
-      </button>
+      <div className="flex gap-4">
+        <button
+          onClick={addGame}
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+        >
+          Добавить игру
+        </button>
+        <button
+          onClick={handleSave}
+          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded hover:from-purple-700 hover:to-pink-700"
+        >
+          Сохранить все данные
+        </button>
+      </div>
     </div>
   )
 }
