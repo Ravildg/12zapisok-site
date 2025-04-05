@@ -1,8 +1,10 @@
+// app/admin/games/page.tsx
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
 import Cropper from "react-easy-crop"
 import { Point, Area } from "react-easy-crop/types"
+import { useRouter } from "next/navigation"
 
 interface Game {
   title: string
@@ -11,12 +13,11 @@ interface Game {
   tags: string
   image: string
   link: string
-  crop?: Point // Координаты обрезки (x, y)
-  zoom?: number // Масштаб
-  croppedAreaPixels?: Area // Область обрезки в пикселях
+  crop?: Point
+  zoom?: number
+  croppedAreaPixels?: Area
 }
 
-// Актуальные изображения из папки /public/uploads
 const availableImages = [
   "/uploads/bt0.jpg",
   "/uploads/bt1.jpg",
@@ -104,7 +105,17 @@ const initialGamesData: Game[] = [
 
 export default function GamesEditor() {
   const [gamesData, setGamesData] = useState<Game[]>(initialGamesData)
+  const router = useRouter()
 
+  // Проверка авторизации
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem("isAdmin") === "true"
+    if (!isAuthenticated) {
+      router.push("/admin/login")
+    }
+  }, [router])
+
+  // Загрузка сохраненных данных
   useEffect(() => {
     const saved = localStorage.getItem("savedGames")
     if (saved) {
@@ -158,69 +169,69 @@ export default function GamesEditor() {
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold mb-4">Редактирование игр</h2>
+    <div className="max-w-4xl mx-auto p-6">
+      <h2 className="text-2xl font-semibold mb-6 text-white">Редактирование игр</h2>
 
       {gamesData.map((game, index) => (
-        <div key={index} className="p-4 border rounded-lg shadow bg-white space-y-4">
-          <h3 className="text-lg font-bold">Игра {index + 1}</h3>
+        <div key={index} className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4 mb-6">
+          <h3 className="text-lg font-bold text-white">Игра {index + 1}</h3>
 
           <div>
-            <label className="block mb-1 font-medium">Название</label>
+            <label className="block mb-1 font-medium text-zinc-300">Название</label>
             <input
               type="text"
               value={game.title}
               onChange={(e) => handleChange(e, index, "title")}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Описание</label>
+            <label className="block mb-1 font-medium text-zinc-300">Описание</label>
             <textarea
               value={game.description}
               onChange={(e) => handleChange(e, index, "description")}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
               rows={3}
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Кол-во игроков</label>
+            <label className="block mb-1 font-medium text-zinc-300">Кол-во игроков</label>
             <input
               type="text"
               value={game.players}
               onChange={(e) => handleChange(e, index, "players")}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Теги</label>
+            <label className="block mb-1 font-medium text-zinc-300">Теги</label>
             <input
               type="text"
               value={game.tags}
               onChange={(e) => handleChange(e, index, "tags")}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Ссылка</label>
+            <label className="block mb-1 font-medium text-zinc-300">Ссылка</label>
             <input
               type="text"
               value={game.link}
               onChange={(e) => handleChange(e, index, "link")}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Изображение</label>
+            <label className="block mb-1 font-medium text-zinc-300">Изображение</label>
             <select
               value={game.image}
               onChange={(e) => handleChange(e, index, "image")}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             >
               {availableImages.map((src) => (
                 <option key={src} value={src}>
@@ -231,13 +242,13 @@ export default function GamesEditor() {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Обрезка изображения</label>
+            <label className="block mb-1 font-medium text-zinc-300">Обрезка изображения</label>
             <div className="relative w-full h-64">
               <Cropper
                 image={game.image}
                 crop={game.crop || { x: 0, y: 0 }}
                 zoom={game.zoom || 1}
-                aspect={16 / 9} // Соотношение сторон можно настроить под нужный размер карточки
+                aspect={16 / 9}
                 onCropChange={(crop) => onCropChange(index, crop)}
                 onZoomChange={(zoom) => onZoomChange(index, zoom)}
                 onCropComplete={(croppedArea, croppedAreaPixels) =>
@@ -246,7 +257,7 @@ export default function GamesEditor() {
               />
             </div>
             <div className="mt-2">
-              <label className="block mb-1 font-medium">Масштаб</label>
+              <label className="block mb-1 font-medium text-zinc-300">Масштаб</label>
               <input
                 type="range"
                 min="1"
@@ -258,11 +269,11 @@ export default function GamesEditor() {
               />
             </div>
             <div className="mt-2">
-              <label className="block mb-1 font-medium">Превью</label>
+              <label className="block mb-1 font-medium text-zinc-300">Превью</label>
               <img
                 src={game.image}
                 alt="превью"
-                className="w-40 h-32 object-cover rounded border"
+                className="w-40 h-32 object-cover rounded border border-purple-500/30"
                 style={{
                   objectPosition: game.crop
                     ? `${game.crop.x}px ${game.crop.y}px`
@@ -276,7 +287,7 @@ export default function GamesEditor() {
 
       <button
         onClick={handleSave}
-        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+        className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded hover:from-purple-700 hover:to-pink-700"
       >
         Сохранить все игры
       </button>
