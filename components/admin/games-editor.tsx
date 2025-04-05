@@ -103,7 +103,6 @@ export default function GamesEditor() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
-        // Конвертируем tags в массив, если это строка
         const normalizedGames = parsed.games.map((game: Game) => ({
           ...game,
           tags: Array.isArray(game.tags)
@@ -111,13 +110,17 @@ export default function GamesEditor() {
             : game.tags.split(",").map((t: string) => t.trim()),
         }))
         console.log("Загружены данные из localStorage в GamesEditor:", parsed)
+        console.log("Количество игр в parsed.games:", parsed.games.length)
         setSectionData({ ...parsed, games: normalizedGames })
       } catch (error) {
         console.warn("Ошибка загрузки sectionData:", error)
+        console.log("Используются начальные данные:", defaultSectionData)
+        console.log("Количество игр в defaultSectionData:", defaultSectionData.games.length)
         setSectionData(defaultSectionData)
       }
     } else {
       console.log("Данные из localStorage отсутствуют, используются начальные данные:", defaultSectionData)
+      console.log("Количество игр в defaultSectionData:", defaultSectionData.games.length)
       setSectionData(defaultSectionData)
     }
   }, [])
@@ -190,7 +193,6 @@ export default function GamesEditor() {
   )
 
   const handleSave = () => {
-    // Конвертируем tags в массив перед сохранением
     const normalizedGames = sectionData.games.map((game) => ({
       ...game,
       tags: Array.isArray(game.tags)
@@ -200,6 +202,7 @@ export default function GamesEditor() {
 
     const dataToSave = { ...sectionData, games: normalizedGames }
     console.log("Сохранение данных:", dataToSave)
+    console.log("Количество игр при сохранении:", normalizedGames.length)
     try {
       localStorage.setItem("sectionData", JSON.stringify(dataToSave))
       localStorage.setItem("savedGames", JSON.stringify(normalizedGames))
@@ -212,6 +215,8 @@ export default function GamesEditor() {
       alert("Ошибка при сохранении данных. Проверьте консоль для подробностей.")
     }
   }
+
+  console.log("Окончательное количество игр в sectionData.games (GamesEditor):", sectionData.games.length)
 
   return (
     <div className="space-y-6">
@@ -324,7 +329,7 @@ export default function GamesEditor() {
               <Cropper
                 image={game.image}
                 crop={game.crop || { x: 0, y: 0 }}
-                zoom={game.zoom || 1}
+                zoom={ Kaufgame.zoom || 1}
                 aspect={16 / 9}
                 onCropChange={(crop) => onCropChange(index, crop)}
                 onZoomChange={(zoom) => onZoomChange(index, zoom)}
