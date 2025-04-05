@@ -62,11 +62,11 @@ export default function GamesSection() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("Glitch effect triggered:", new Date().toISOString()) // Отладка
+      console.log("Glitch effect triggered:", new Date().toISOString())
       setGlitch(true)
       setTimeout(() => {
         setGlitch(false)
-        console.log("Glitch effect ended:", new Date().toISOString()) // Отладка
+        console.log("Glitch effect ended:", new Date().toISOString())
       }, 1500)
     }, 5000)
 
@@ -115,12 +115,12 @@ export default function GamesSection() {
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
       <div
-        className={`absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/20 blur-3xl rounded-full transition-all duration-200 ${
+        className={`absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/30 blur-3xl rounded-full transition-all duration-200 ${
           glitch ? "animate-glitch-bg" : ""
         }`}
       />
       <div
-        className={`absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/10 blur-3xl rounded-full transition-all duration-200 ${
+        className={`absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/20 blur-3xl rounded-full transition-all duration-200 ${
           glitch ? "animate-glitch-bg" : ""
         }`}
       />
@@ -129,7 +129,7 @@ export default function GamesSection() {
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className={`absolute rounded-full bg-pink-500 particle transition-all duration-200 ${
+            className={`absolute rounded-full bg-purple-500 particle transition-all duration-200 ${
               glitch ? "animate-glitch-bg" : ""
             }`}
             style={{
@@ -166,7 +166,7 @@ export default function GamesSection() {
                 index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
               } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#2A1B3D] duration-300 hover:scale-105`}
             >
-              <div className="md:w-1/3 w-full h-64 relative">
+              <div className="md:w-1/3 w-full h-[216px] relative aspect-[16/9]">
                 {game.croppedImage ? (
                   <img
                     src={game.croppedImage}
@@ -178,7 +178,7 @@ export default function GamesSection() {
                     src={game.image}
                     alt={game.title}
                     fill
-                    className="w-full h-full transition-transform duration-300 group-hover:scale-110 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
                   />
                 )}
               </div>
