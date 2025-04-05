@@ -72,7 +72,7 @@ export default function GamesSection() {
       <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/10 blur-3xl rounded-full" />
 
       {/* Анимации частиц */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
@@ -102,54 +102,55 @@ export default function GamesSection() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {games.map((game, idx) => (
-            <div
-              key={idx}
-              className="bg-[#1F1833] rounded-lg overflow-hidden border border-purple-500/20 hover:border-purple-500/40 transition-all"
+        <div className="space-y-12">
+          {games.map((game, index) => (
+            <Link
+              key={game.title}
+              href={game.link}
+              className={`flex flex-col md:flex-row ${
+                index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all hover:shadow-[0_0_20px_#a855f7] group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem]`}
             >
-              <Image
-                src={game.image}
-                alt={game.title}
-                width={600}
-                height={400}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-
-              <div className="p-6 space-y-3">
-                <h3 className="text-xl font-semibold text-white">{game.title}</h3>
-                <p className="text-zinc-300 text-sm">{game.description}</p>
-                <div className="text-sm text-purple-300">{game.players} · {game.duration}</div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {game.tags.map((tag, i) => (
+              <div className="md:w-1/2 w-full h-64 relative">
+                <Image
+                  src={game.image}
+                  alt={game.title}
+                  fill
+                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
+                />
+              </div>
+              <div className="md:w-1/2 w-full p-6 md:p-10 space-y-3">
+                <h3 className="text-2xl font-bold text-white">{game.title}</h3>
+                <p className="text-zinc-300">{game.description}</p>
+                <div className="text-sm text-purple-300">
+                  <span>{game.players}</span> · <span>{game.duration}</span>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  {game.tags.map((tag) => (
                     <span
-                      key={i}
-                      className="px-2 py-1 text-xs rounded bg-purple-700/20 text-purple-300 border border-purple-500/30"
+                      key={tag}
+                      className="px-2 py-1 text-xs rounded-full bg-purple-700/20 text-purple-300 border border-purple-500/30"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
                 <div className="pt-4 flex gap-3">
-                  <Link href={game.link} className="flex-1">
-                    <Button
-                      variant="secondary"
-                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
-                    >
-                      Выбрать игру
-                    </Button>
-                  </Link>
-                  <Link href={game.link} className="flex-1">
-                    <Button
-                      variant="outline"
-                      className="w-full bg-transparent text-white border border-white/50 hover:bg-white/10"
-                    >
-                      Как это работает
-                    </Button>
-                  </Link>
+                  <Button
+                    variant="secondary"
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                  >
+                    Выбрать игру
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 bg-transparent text-white border border-white/50 hover:bg-white/10"
+                  >
+                    Как это работает
+                  </Button>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
