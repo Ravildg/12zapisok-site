@@ -125,19 +125,18 @@ export default function PricingSection() {
               </CardContent>
 
               <CardFooter>
-                <Button
-                  asChild
-                  className={`w-full ${
-                    option.popular
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-[0_0_15px_rgba(138,43,226,0.3)]"
-                      : "bg-[#1A1333] hover:bg-[#251A45] border border-purple-500/30"
-                  } text-white group`}
-                >
-                  <Link href="https://mrqz.me/5e8cd00044a4300055554495" target="_blank" rel="noopener noreferrer">
+                <Link href="https://mrqz.me/5e8cd00044a4300055554495" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    className={`w-full ${
+                      option.popular
+                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-[0_0_15px_rgba(138,43,226,0.3)]"
+                        : "bg-[#1A1333] hover:bg-[#251A45] border border-purple-500/30"
+                    } text-white group`}
+                  >
                     Оставить заявку
                     {option.popular && <Sparkles className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />}
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
