@@ -53,10 +53,32 @@ export const initialGames: Game[] = [
     crop: { x: 0, y: 0 },
     zoom: 1,
   },
+  {
+    title: "Петля Времени",
+    description: "Путешествие во времени, алхимия и загадочная хижина.",
+    players: "6–12 человек",
+    tags: "Стимпанк, Головоломки",
+    image: "/uploads/ki5.jpg",
+    link: "/game/time-loop",
+    duration: "2 часа",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
+  },
+  {
+    title: "Яхта",
+    description: "Исторический триллер на послевоенной яхте с шпионажем и драгоценностями.",
+    players: "8–16 человек",
+    tags: "Детектив, Интриги",
+    image: "/uploads/ki6.jpg",
+    link: "/game/yacht",
+    duration: "2 часа",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
+  },
 ]
 
 export const defaultSectionData: SectionData = {
   games: initialGames,
   sectionTitle: "Наши квест-спектакли",
-  sectionSubtitle: "Погрузитесь в историю, которую будете вспоминать всегда",
+  sectionSubtitle: "Вступайте в игру, которая станет легендой вашей команды",
 }
