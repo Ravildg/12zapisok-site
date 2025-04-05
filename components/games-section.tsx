@@ -7,6 +7,9 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { SectionData, defaultSectionData } from "@/lib/games-data"
 
+// Отключаем серверный рендеринг для этой страницы
+export const dynamic = "force-dynamic"
+
 export default function GamesSection() {
   const [sectionData, setSectionData] = useState<SectionData>(defaultSectionData)
   const [glitch, setGlitch] = useState(false)
@@ -82,7 +85,6 @@ export default function GamesSection() {
     return () => clearInterval(interval)
   }, [])
 
-  // Эффект для частиц и линий
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -98,7 +100,6 @@ export default function GamesSection() {
     resizeCanvas()
     window.addEventListener("resize", resizeCanvas)
 
-    // Инициализация частиц
     const particleCount = 12
     particlesRef.current = Array.from({ length: particleCount }, () => ({
       x: Math.random() * canvas.width,
@@ -110,7 +111,6 @@ export default function GamesSection() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Обновление позиций частиц
       particlesRef.current.forEach((particle) => {
         particle.y -= particle.speed
         if (particle.y < 0) {
@@ -118,14 +118,12 @@ export default function GamesSection() {
           particle.x = Math.random() * canvas.width
         }
 
-        // Рисуем частицы
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, particle.size / 2, 0, Math.PI * 2)
         ctx.fillStyle = "rgba(147, 51, 234, 0.5)"
         ctx.fill()
       })
 
-      // Рисуем неоновые линии между частицами
       ctx.strokeStyle = "rgba(147, 51, 234, 0.3)"
       ctx.lineWidth = 1
       for (let i = 0; i < particlesRef.current.length; i++) {
@@ -165,10 +163,7 @@ export default function GamesSection() {
         }`}
       />
 
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 pointer-events-none z-0"
-      />
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
@@ -238,7 +233,7 @@ export default function GamesSection() {
                     <span>{game.players}</span> · <span>{game.duration}</span>
                   </div>
                   <div className="flex gap-2 flex-wrap mt-2">
-                    {game.tags.map((tag) => (
+                    {(Array.isArray(game.tags) ? game.tags : []).map((tag) => (
                       <span
                         key={tag}
                         className={`px-2 py-1 text-xs rounded-full bg-purple-700/20 text-purple-300 border border-purple-500/30 transition-all duration-200 ${
