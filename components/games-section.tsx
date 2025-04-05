@@ -60,12 +60,15 @@ export default function GamesSection() {
   const [games, setGames] = useState<Game[]>(fallbackGames)
   const [glitch, setGlitch] = useState(false)
 
-  // Эффект мерцания каждые 5 секунд
   useEffect(() => {
     const interval = setInterval(() => {
+      console.log("Glitch effect triggered:", new Date().toISOString()) // Отладка
       setGlitch(true)
-      setTimeout(() => setGlitch(false), 1500) // Длительность 1.5 секунды
-    }, 5000) // Каждые 5 секунд
+      setTimeout(() => {
+        setGlitch(false)
+        console.log("Glitch effect ended:", new Date().toISOString()) // Отладка
+      }, 1500)
+    }, 5000)
 
     return () => clearInterval(interval)
   }, [])
@@ -111,7 +114,6 @@ export default function GamesSection() {
 
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
-      {/* Фоновые градиенты */}
       <div
         className={`absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/20 blur-3xl rounded-full transition-all duration-200 ${
           glitch ? "animate-glitch-bg" : ""
@@ -123,12 +125,11 @@ export default function GamesSection() {
         }`}
       />
 
-      {/* Анимации частиц */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className={`absolute rounded-full bg-pink-500 opacity-10 transition-all duration-200 ${
+            className={`absolute rounded-full bg-pink-500 particle transition-all duration-200 ${
               glitch ? "animate-glitch-bg" : ""
             }`}
             style={{
@@ -178,13 +179,6 @@ export default function GamesSection() {
                     alt={game.title}
                     fill
                     className="w-full h-full transition-transform duration-300 group-hover:scale-110 rounded-t-xl md:rounded-t-none md:rounded-l-xl"
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: game.crop
-                        ? `${game.crop.x}px ${game.crop.y}px`
-                        : "center",
-                      transform: game.zoom ? `scale(${game.zoom})` : "scale(1)",
-                    }}
                   />
                 )}
               </div>
