@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Sparkles } from "lucide-react";
@@ -53,12 +54,12 @@ const pricingOptions: PricingOption[] = [
     price: "от 40 000 ₽",
     features: [
       "До 25 участников",
-      "4 актёра", // Исправил повторение "до 3-4 актёра"
+      "4 актёра",
       "Премиум реквизит и декорации",
       "Продолжительность 2,5 часа",
       "Профессиональная фотосъёмка",
-      "Фотозона", // Добавил запятую
-      "Подарок на выбор", // Добавил запятую
+      "Фотозона",
+      "Подарок на выбор",
       "Индивидуальная адаптация сценария",
       "Личный куратор",
     ],
@@ -125,14 +126,17 @@ export default function PricingSection() {
 
               <CardFooter>
                 <Button
+                  asChild
                   className={`w-full ${
                     option.popular
                       ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-[0_0_15px_rgba(138,43,226,0.3)]"
                       : "bg-[#1A1333] hover:bg-[#251A45] border border-purple-500/30"
                   } text-white group`}
                 >
-                  Оставить заявку
-                  {option.popular && <Sparkles className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />}
+                  <Link href="https://mrqz.me/5e8cd00044a4300055554495" target="_blank" rel="noopener noreferrer">
+                    Оставить заявку
+                    {option.popular && <Sparkles className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />}
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
