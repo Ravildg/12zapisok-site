@@ -67,74 +67,79 @@ export default function GamesSection() {
 
   return (
     <section id="игры" className="py-20 bg-[#0F0A1E] relative overflow-hidden">
-      {/* Фоновые градиенты */}
+      {/* Градиенты и частицы */}
       <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-purple-900/20 blur-3xl rounded-full" />
       <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-pink-900/10 blur-3xl rounded-full" />
-
-      {/* Анимации частиц */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-pink-500 opacity-10"
+            className="absolute rounded-full bg-purple-500 opacity-10"
             style={{
               width: `${Math.random() * 8 + 4}px`,
               height: `${Math.random() * 8 + 4}px`,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              animation: `float ${Math.random() * 12 + 10}s linear infinite`,
-              animationDelay: `${Math.random() * 6}s`,
+              animation: `float ${Math.random() * 10 + 8}s linear infinite`,
+              animationDelay: `${Math.random() * 5}s`,
             }}
           />
         ))}
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Наши{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
-              квест-спектакли
-            </span>
-          </h2>
-          <p className="text-purple-300 text-sm">Выберите игру по вкусу и настроению</p>
-        </div>
+        <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center">
+          Наши{" "}
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+            квест-спектакли
+          </span>
+        </h2>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {games.map((game, idx) => (
+        <div className="space-y-16">
+          {games.map((game, i) => (
             <div
-              key={idx}
-              className="bg-[#1F1833] rounded-lg shadow-lg overflow-hidden hover:shadow-purple-700/30 transition-shadow"
+              key={i}
+              className={`
+                flex flex-col md:flex-row items-center md:items-start gap-8 p-6 rounded-xl 
+                transition-all duration-300 hover:shadow-[0_0_20px_2px_rgba(200,100,255,0.3)]
+                border border-transparent hover:border-purple-500/30 
+                group
+                ${i % 2 === 1 ? "md:flex-row-reverse" : ""}
+              `}
             >
-              <Image
-                src={game.image}
-                alt={game.title}
-                width={600}
-                height={400}
-                className="w-full h-48 object-cover"
-              />
+              <div className="w-full md:w-1/2 overflow-hidden rounded-lg shadow-lg">
+                <Image
+                  src={game.image}
+                  alt={game.title}
+                  width={600}
+                  height={400}
+                  className="object-cover w-full h-full rounded-lg group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
 
-              <div className="p-6 space-y-3">
-                <h3 className="text-xl font-semibold text-white">{game.title}</h3>
-                <p className="text-zinc-400 text-sm">{game.description}</p>
-                <div className="text-sm text-purple-300">{game.players} · {game.duration}</div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {game.tags.map((tag, i) => (
+              <div className="w-full md:w-1/2 space-y-4 text-zinc-300">
+                <h3 className="text-2xl font-bold group-hover:text-purple-400 transition-colors">
+                  {game.title}
+                </h3>
+                <p>{game.description}</p>
+                <p className="text-sm text-purple-300">
+                  👥 {game.players} • ⏳ {game.duration}
+                </p>
+                <div className="flex flex-wrap gap-2 text-sm">
+                  {game.tags.map((tag, idx) => (
                     <span
-                      key={i}
-                      className="px-2 py-1 text-xs rounded bg-purple-700/20 text-purple-300 border border-purple-500/30"
+                      key={idx}
+                      className="px-2 py-1 rounded bg-purple-600/20 text-purple-300 border border-purple-500/20"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="pt-4">
-                  <Link href={game.link}>
-                    <Button variant="secondary" className="w-full bg-purple-600/20 text-purple-300 hover:bg-purple-600/30">
-                      Подробнее
-                    </Button>
-                  </Link>
-                </div>
+                <Link href={game.link}>
+                  <Button className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 transition-colors">
+                    Подробнее
+                  </Button>
+                </Link>
               </div>
             </div>
           ))}
