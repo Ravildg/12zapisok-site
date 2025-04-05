@@ -73,14 +73,14 @@ export default function Footer() {
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1A1333] flex items-center justify-center mr-3">
                   <Phone className="h-4 w-4 text-purple-400" />
                 </div>
-                <span className="text-zinc-400 hover:text-white transition-colors">+7 (999) 123-45-67</span>
+                <span className="text-zinc-400 hover:text-white transition-colors">+7 (930) 283-83-68</span>
               </li>
 
               <li className="flex items-start">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1A1333] flex items-center justify-center mr-3">
                   <Mail className="h-4 w-4 text-purple-400" />
                 </div>
-                <span className="text-zinc-400 hover:text-white transition-colors">info@12zapisok.ru</span>
+                <span className="text-zinc-400 hover:text-white transition-colors">12zapisok.nn@gmail.com</span>
               </li>
 
               <li className="flex items-start">
@@ -88,7 +88,7 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 text-purple-400" />
                 </div>
                 <span className="text-zinc-400 hover:text-white transition-colors">
-                  г. Москва, ул. Примерная, д. 123
+                  г. Нижний Новгород, ул. Белинского, д. 45
                 </span>
               </li>
             </ul>
