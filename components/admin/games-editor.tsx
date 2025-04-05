@@ -5,26 +5,7 @@ import { useEffect, useState, useCallback } from "react"
 import Cropper from "react-easy-crop"
 import { Point, Area } from "react-easy-crop/types"
 import Image from "next/image"
-
-interface Game {
-  title: string
-  description: string
-  players: string
-  tags: string
-  image: string
-  link: string
-  duration?: string
-  crop?: Point
-  zoom?: number
-  croppedAreaPixels?: Area
-  croppedImage?: string
-}
-
-interface SectionData {
-  games: Game[]
-  sectionTitle: string
-  sectionSubtitle: string
-}
+import { Game, SectionData, defaultSectionData } from "@/lib/games-data"
 
 const availableImages = [
   "/uploads/bt0.jpg",
@@ -58,60 +39,18 @@ const availableImages = [
   "/uploads/rn9.jpg",
 ]
 
-const initialGamesData: Game[] = [
-  {
-    title: "Коллекционер Игр",
-    description: "Мистический детектив в Лондоне, древняя игра и исчезнувшие артефакты.",
-    players: "6–12 человек",
-    tags: "Мистика, Детектив",
-    image: "/uploads/ki2.jpg",
-    link: "/game/collector",
-    duration: "2 часа",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-  {
-    title: "Бермудский Треугольник",
-    description: "Фантастическая комедия на таинственном острове.",
-    players: "8–15 человек",
-    tags: "Комедия, Фантастика",
-    image: "/uploads/ki3.jpg",
-    link: "/game/bermuda",
-    duration: "1.5 часа",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-  {
-    title: "Кланы Нью-Йорка",
-    description: "Гангстерская вечеринка с казино и интригами.",
-    players: "10–20 человек",
-    tags: "Гангстеры, Интриги",
-    image: "/uploads/ki4.jpg",
-    link: "/game/new-york-clans",
-    duration: "2 часа",
-    crop: { x: 0, y: 0 },
-    zoom: 1,
-  },
-]
-
-const initialSectionData: SectionData = {
-  games: initialGamesData,
-  sectionTitle: "Наши квест-спектакли",
-  sectionSubtitle: "Погрузитесь в историю, которую будете вспоминать всегда",
-}
-
 const cropImage = async (
   imageSrc: string,
   crop: { x: number; y: number; width: number; height: number },
   zoom: number
-) => {
-  return new Promise<string>((resolve, reject) => {
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.src = imageSrc
 
     img.onload = () => {
-      console.log("Изображение загружено:", imageSrc) // Отладка
+      console.log("Изображение загружено:", imageSrc)
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       if (!ctx) {
@@ -120,21 +59,18 @@ const cropImage = async (
         return
       }
 
-      // Устанавливаем размеры canvas с соотношением сторон 16:9
       const targetWidth = 384
-      const targetHeight = 216
+      const targetHeight = 180
       canvas.width = targetWidth
       canvas.height = targetHeight
 
-      // Масштабируем координаты обрезки с учётом zoom
       const scaledWidth = crop.width / zoom
       const scaledHeight = crop.height / zoom
       const scaledX = crop.x / zoom
       const scaledY = crop.y / zoom
 
-      console.log("Параметры обрезки:", { scaledX, scaledY, scaledWidth, scaledHeight, zoom }) // Отладка
+      console.log("Параметры обрезки:", { scaledX, scaledY, scaledWidth, scaledHeight, zoom })
 
-      // Рисуем обрезанное изображение на canvas
       ctx.drawImage(
         img,
         scaledX,
@@ -148,7 +84,7 @@ const cropImage = async (
       )
 
       const croppedImage = canvas.toDataURL("image/jpeg", 0.9)
-      console.log("Обрезанное изображение создано:", croppedImage) // Отладка
+      console.log("Обрезанное изображение создано:", croppedImage)
       resolve(croppedImage)
     }
 
@@ -160,18 +96,22 @@ const cropImage = async (
 }
 
 export default function GamesEditor() {
-  const [sectionData, setSectionData] = useState<SectionData>(initialSectionData)
+  const [sectionData, setSectionData] = useState<SectionData>(defaultSectionData)
 
   useEffect(() => {
     const saved = localStorage.getItem("sectionData")
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
-        console.log("Загружены данные из localStorage:", parsed) // Отладка
+        console.log("Загружены данные из localStorage в GamesEditor:", parsed)
         setSectionData(parsed)
       } catch (error) {
         console.warn("Ошибка загрузки sectionData:", error)
+        setSectionData(defaultSectionData)
       }
+    } else {
+      console.log("Данные из localStorage отсутствуют, используются начальные данные:", defaultSectionData)
+      setSectionData(defaultSectionData)
     }
   }, [])
 
@@ -180,6 +120,7 @@ export default function GamesEditor() {
     field: "sectionTitle" | "sectionSubtitle"
   ) => {
     const value = e.target.value
+    console.log(`Изменение ${field}:`, value)
     setSectionData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -189,10 +130,11 @@ export default function GamesEditor() {
     field: keyof Game
   ) => {
     const value = e.target.value
+    console.log(`Изменение поля ${field} для игры ${index}:`, value)
     const updatedGames = [...sectionData.games]
     updatedGames[index] = { ...updatedGames[index], [field]: value }
-    // Если изменили изображение, сбрасываем обрезку
     if (field === "image") {
+      console.log("Сброс параметров обрезки для игры", index)
       updatedGames[index].croppedImage = undefined
       updatedGames[index].crop = { x: 0, y: 0 }
       updatedGames[index].zoom = 1
@@ -202,14 +144,14 @@ export default function GamesEditor() {
   }
 
   const onCropChange = (index: number, crop: Point) => {
-    console.log("onCropChange:", { index, crop }) // Отладка
+    console.log("onCropChange:", { index, crop })
     const updatedGames = [...sectionData.games]
     updatedGames[index] = { ...updatedGames[index], crop }
     setSectionData((prev) => ({ ...prev, games: updatedGames }))
   }
 
   const onZoomChange = (index: number, zoom: number) => {
-    console.log("onZoomChange:", { index, zoom }) // Отладка
+    console.log("onZoomChange:", { index, zoom })
     const updatedGames = [...sectionData.games]
     updatedGames[index] = { ...updatedGames[index], zoom }
     setSectionData((prev) => ({ ...prev, games: updatedGames }))
@@ -217,7 +159,7 @@ export default function GamesEditor() {
 
   const onCropComplete = useCallback(
     async (index: number, croppedArea: Area, croppedAreaPixels: Area) => {
-      console.log("onCropComplete called:", { index, croppedArea, croppedAreaPixels }) // Отладка
+      console.log("onCropComplete called:", { index, croppedArea, croppedAreaPixels })
       const updatedGames = [...sectionData.games]
       updatedGames[index] = { ...updatedGames[index], croppedAreaPixels }
 
@@ -229,7 +171,7 @@ export default function GamesEditor() {
             sectionData.games[index].zoom || 1
           )
           updatedGames[index].croppedImage = croppedImage
-          console.log("Состояние после обрезки:", updatedGames[index]) // Отладка
+          console.log("Состояние после обрезки:", updatedGames[index])
         }
       } catch (error) {
         console.error("Ошибка обрезки изображения:", error)
@@ -241,12 +183,18 @@ export default function GamesEditor() {
   )
 
   const handleSave = () => {
-    console.log("Сохранение данных:", sectionData) // Отладка
-    localStorage.setItem("sectionData", JSON.stringify(sectionData))
-    // Сохраняем игры отдельно для совместимости с предыдущей версией
-    localStorage.setItem("savedGames", JSON.stringify(sectionData.games))
-    alert("Данные сохранены!")
-    window.dispatchEvent(new Event("gamesDataUpdated"))
+    console.log("Сохранение данных:", sectionData)
+    try {
+      localStorage.setItem("sectionData", JSON.stringify(sectionData))
+      localStorage.setItem("savedGames", JSON.stringify(sectionData.games))
+      console.log("Данные успешно сохранены в localStorage")
+      alert("Данные сохранены!")
+      window.dispatchEvent(new Event("gamesDataUpdated"))
+      console.log("Событие gamesDataUpdated отправлено")
+    } catch (error) {
+      console.error("Ошибка сохранения данных в localStorage:", error)
+      alert("Ошибка при сохранении данных. Проверьте консоль для подробностей.")
+    }
   }
 
   return (
@@ -358,7 +306,7 @@ export default function GamesEditor() {
 
           <div>
             <label className="block mb-1 font-medium text-zinc-300">Обрезка изображения</label>
-            <div className="relative w-1/3 h-[216px] bg-gray-800">
+            <div className="relative w-1/3 h-[180px] bg-gray-800">
               <Cropper
                 image={game.image}
                 crop={game.crop || { x: 0, y: 0 }}
@@ -371,7 +319,7 @@ export default function GamesEditor() {
                 }
                 restrictPosition={false}
                 showGrid={true}
-                cropSize={{ width: 384, height: 216 }}
+                cropSize={{ width: 384, height: 180 }}
               />
             </div>
             <div className="mt-2">
@@ -388,7 +336,7 @@ export default function GamesEditor() {
             </div>
             <div className="mt-2">
               <label className="block mb-1 font-medium text-zinc-300">Превью</label>
-              <div className="relative w-1/3 h-[216px]">
+              <div className="relative w-1/3 h-[180px]">
                 {game.croppedImage ? (
                   <img
                     src={game.croppedImage}
