@@ -103,8 +103,15 @@ export default function GamesEditor() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
+        // Конвертируем tags в массив, если это строка
+        const normalizedGames = parsed.games.map((game: Game) => ({
+          ...game,
+          tags: Array.isArray(game.tags)
+            ? game.tags
+            : game.tags.split(",").map((t: string) => t.trim()),
+        }))
         console.log("Загружены данные из localStorage в GamesEditor:", parsed)
-        setSectionData(parsed)
+        setSectionData({ ...parsed, games: normalizedGames })
       } catch (error) {
         console.warn("Ошибка загрузки sectionData:", error)
         setSectionData(defaultSectionData)
@@ -183,10 +190,19 @@ export default function GamesEditor() {
   )
 
   const handleSave = () => {
-    console.log("Сохранение данных:", sectionData)
+    // Конвертируем tags в массив перед сохранением
+    const normalizedGames = sectionData.games.map((game) => ({
+      ...game,
+      tags: Array.isArray(game.tags)
+        ? game.tags
+        : game.tags.split(",").map((t) => t.trim()),
+    }))
+
+    const dataToSave = { ...sectionData, games: normalizedGames }
+    console.log("Сохранение данных:", dataToSave)
     try {
-      localStorage.setItem("sectionData", JSON.stringify(sectionData))
-      localStorage.setItem("savedGames", JSON.stringify(sectionData.games))
+      localStorage.setItem("sectionData", JSON.stringify(dataToSave))
+      localStorage.setItem("savedGames", JSON.stringify(normalizedGames))
       console.log("Данные успешно сохранены в localStorage")
       alert("Данные сохранены!")
       window.dispatchEvent(new Event("gamesDataUpdated"))
@@ -201,7 +217,6 @@ export default function GamesEditor() {
     <div className="space-y-6">
       <h2 className="text-xl font-semibold mb-4 text-white">Редактирование раздела игр</h2>
 
-      {/* Редактирование заголовка и подзаголовка */}
       <div className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4">
         <h3 className="text-lg font-bold text-white">Заголовок и подзаголовок раздела</h3>
         <div>
@@ -224,7 +239,6 @@ export default function GamesEditor() {
         </div>
       </div>
 
-      {/* Редактирование игр */}
       {sectionData.games.map((game, index) => (
         <div key={index} className="p-6 border rounded-lg shadow bg-[#1F1833] space-y-4">
           <h3 className="text-lg font-bold text-white">Игра {index + 1}</h3>
@@ -270,10 +284,10 @@ export default function GamesEditor() {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium text-zinc-300">Теги</label>
+            <label className="block mb-1 font-medium text-zinc-300">Теги (через запятую)</label>
             <input
               type="text"
-              value={game.tags}
+              value={Array.isArray(game.tags) ? game.tags.join(", ") : game.tags}
               onChange={(e) => handleGameChange(e, index, "tags")}
               className="w-full p-2 border rounded bg-[#2A2344] text-white border-purple-500/30"
             />
