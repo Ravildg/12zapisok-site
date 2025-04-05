@@ -1,6 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
+import Cropper from "react-easy-crop"
+import { Point, Area } from "react-easy-crop/types"
 
 interface Game {
   title: string
@@ -9,6 +11,9 @@ interface Game {
   tags: string
   image: string
   link: string
+  crop?: Point // Координаты обрезки (x, y)
+  zoom?: number // Масштаб
+  croppedAreaPixels?: Area // Область обрезки в пикселях
 }
 
 // Актуальные изображения из папки /public/uploads
@@ -52,6 +57,8 @@ const initialGamesData: Game[] = [
     tags: "Мистика, Детектив",
     image: "/uploads/ki2.jpg",
     link: "/game/collector",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
   {
     title: "Бермудский Треугольник",
@@ -60,6 +67,8 @@ const initialGamesData: Game[] = [
     tags: "Комедия, Фантастика",
     image: "/uploads/ki3.jpg",
     link: "/game/bermuda",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
   {
     title: "Кланы Нью-Йорка",
@@ -68,6 +77,8 @@ const initialGamesData: Game[] = [
     tags: "Гангстеры, Интриги",
     image: "/uploads/ki4.jpg",
     link: "/game/new-york-clans",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
   {
     title: "Петля Времени",
@@ -76,6 +87,8 @@ const initialGamesData: Game[] = [
     tags: "Стимпанк, Головоломки",
     image: "/uploads/ki5.jpg",
     link: "/game/time-loop",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
   {
     title: "Яхта",
@@ -84,6 +97,8 @@ const initialGamesData: Game[] = [
     tags: "Детектив, Интриги",
     image: "/uploads/ki6.jpg",
     link: "/game/yacht",
+    crop: { x: 0, y: 0 },
+    zoom: 1,
   },
 ]
 
@@ -114,6 +129,27 @@ export default function GamesEditor() {
     updated[index] = { ...updated[index], [field]: value }
     setGamesData(updated)
   }
+
+  const onCropChange = (index: number, crop: Point) => {
+    const updated = [...gamesData]
+    updated[index] = { ...updated[index], crop }
+    setGamesData(updated)
+  }
+
+  const onZoomChange = (index: number, zoom: number) => {
+    const updated = [...gamesData]
+    updated[index] = { ...updated[index], zoom }
+    setGamesData(updated)
+  }
+
+  const onCropComplete = useCallback(
+    (index: number, croppedArea: Area, croppedAreaPixels: Area) => {
+      const updated = [...gamesData]
+      updated[index] = { ...updated[index], croppedAreaPixels }
+      setGamesData(updated)
+    },
+    [gamesData]
+  )
 
   const handleSave = () => {
     localStorage.setItem("savedGames", JSON.stringify(gamesData))
@@ -192,11 +228,46 @@ export default function GamesEditor() {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Обрезка изображения</label>
+            <div className="relative w-full h-64">
+              <Cropper
+                image={game.image}
+                crop={game.crop || { x: 0, y: 0 }}
+                zoom={game.zoom || 1}
+                aspect={16 / 9} // Соотношение сторон можно настроить под нужный размер карточки
+                onCropChange={(crop) => onCropChange(index, crop)}
+                onZoomChange={(zoom) => onZoomChange(index, zoom)}
+                onCropComplete={(croppedArea, croppedAreaPixels) =>
+                  onCropComplete(index, croppedArea, croppedAreaPixels)
+                }
+              />
+            </div>
             <div className="mt-2">
+              <label className="block mb-1 font-medium">Масштаб</label>
+              <input
+                type="range"
+                min="1"
+                max="3"
+                step="0.1"
+                value={game.zoom || 1}
+                onChange={(e) => onZoomChange(index, parseFloat(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div className="mt-2">
+              <label className="block mb-1 font-medium">Превью</label>
               <img
                 src={game.image}
                 alt="превью"
                 className="w-40 h-32 object-cover rounded border"
+                style={{
+                  objectPosition: game.crop
+                    ? `${game.crop.x}px ${game.crop.y}px`
+                    : "center",
+                }}
               />
             </div>
           </div>
