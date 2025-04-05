@@ -17,7 +17,7 @@ interface Game {
   crop?: { x: number; y: number }
   zoom?: number
   croppedAreaPixels?: { x: number; y: number; width: number; height: number }
-  croppedImage?: string // Добавляем поле для обрезанного изображения
+  croppedImage?: string
 }
 
 const fallbackGames: Game[] = [
@@ -64,7 +64,7 @@ export default function GamesSection() {
   useEffect(() => {
     const interval = setInterval(() => {
       setGlitch(true)
-      setTimeout(() => setGlitch(false), 1500) // Увеличиваем длительность до 1.5 секунд
+      setTimeout(() => setGlitch(false), 1500) // Длительность 1.5 секунды
     }, 5000) // Каждые 5 секунд
 
     return () => clearInterval(interval)
@@ -237,27 +237,6 @@ export default function GamesSection() {
           ))}
         </div>
       </div>
-
-      {/* CSS для эффекта мерцания с белым шумом и искажением */}
-      <style jsx>{`
-        @keyframes glitch {
-          0% {
-            text-shadow: 0.1em 0 0 rgba(255, 255, 255, 0.5), -0.1em 0 0 rgba(255, 255, 255, 0.5);
-            opacity: 1;
-          }
-          20% {
-            text-shadow: 0.15em 0 0 rgba(255, 255, 255, 0.7), -0.15em 0 0 rgba(255, 255, 255, 0.7);
-            opacity: 0.6;
-          }
-          40% {
-            text-shadow: -0.1em 0 0 rgba(255, 255, 255, 0.5), 0.1em 0 0 rgba(255, 255, 255, 0.5);
-            opacity: 0.8;
-          }
-          60% {
-            text-shadow: 0.15em 0 0 rgba(255, 255, 255, 0.7), -0.15em 0 0 rgba(255, 255, 255, 0.7);
-            opacity: 0.5;
-          }
-          80% {
-            text-shadow: -0.1em 0 0 rgba(255, 255, 255, 0.5), 0.1em 0 0 rgba(255, 255, 255, 0.5);
-            opacity: 0.7;
-          }
+    </section>
+  )
+}
