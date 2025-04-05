@@ -60,6 +60,40 @@ export default function GamesSection() {
   const [games, setGames] = useState<Game[]>(fallbackGames)
   const [glitch, setGlitch] = useState(false)
 
+  const loadGamesData = () => {
+    const saved = localStorage.getItem("savedGames")
+    if (saved) {
+      try {
+        const parsed: Game[] = JSON.parse(saved)
+        const enriched = parsed.map((g) => ({
+          ...g,
+          tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
+          duration: g.duration || "2 часа",
+        }))
+        console.log("Загружены данные в GamesSection:", enriched) // Отладка
+        setGames(enriched)
+      } catch (e) {
+        console.warn("Ошибка загрузки savedGames:", e)
+      }
+    }
+  }
+
+  useEffect(() => {
+    // Загружаем данные при монтировании
+    loadGamesData()
+
+    // Обработчик события gamesDataUpdated
+    const handleGamesDataUpdated = () => {
+      console.log("Событие gamesDataUpdated получено") // Отладка
+      loadGamesData()
+    }
+
+    window.addEventListener("gamesDataUpdated", handleGamesDataUpdated)
+    return () => {
+      window.removeEventListener("gamesDataUpdated", handleGamesDataUpdated)
+    }
+  }, [])
+
   useEffect(() => {
     const interval = setInterval(() => {
       console.log("Glitch effect triggered:", new Date().toISOString())
@@ -71,45 +105,6 @@ export default function GamesSection() {
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    const saved = localStorage.getItem("savedGames")
-    if (saved) {
-      try {
-        const parsed: Game[] = JSON.parse(saved)
-        const enriched = parsed.map((g) => ({
-          ...g,
-          tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
-          duration: g.duration || "2 часа",
-        }))
-        setGames(enriched)
-      } catch (e) {
-        console.warn("Ошибка загрузки savedGames:", e)
-      }
-    }
-
-    const handleGamesDataUpdated = () => {
-      const updated = localStorage.getItem("savedGames")
-      if (updated) {
-        try {
-          const parsed: Game[] = JSON.parse(updated)
-          const enriched = parsed.map((g) => ({
-            ...g,
-            tags: Array.isArray(g.tags) ? g.tags : g.tags.split(",").map((t: string) => t.trim()),
-            duration: g.duration || "2 часа",
-          }))
-          setGames(enriched)
-        } catch (e) {
-          console.warn("Ошибка загрузки updatedGames:", e)
-        }
-      }
-    }
-
-    window.addEventListener("gamesDataUpdated", handleGamesDataUpdated)
-    return () => {
-      window.removeEventListener("gamesDataUpdated", handleGamesDataUpdated)
-    }
   }, [])
 
   return (
@@ -164,7 +159,7 @@ export default function GamesSection() {
               href={game.link}
               className={`flex flex-col md:flex-row ${
                 index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/40 min-h-[16rem] hover:shadow-[0_0_20px_#2A1B3D] duration-300 hover:scale-105`}
+              } items-center bg-[#1F1833] rounded-xl overflow-hidden transition-all group border border-purple-500/20 hover:border-purple-500/60 min-h-[16rem] hover:shadow-[0_0_30px_rgba(147,51,234,0.8)] duration-300 hover:scale-105`}
             >
               <div className="md:w-1/3 w-full h-[216px] relative aspect-[16/9]">
                 {game.croppedImage ? (
