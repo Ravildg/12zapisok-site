@@ -14,9 +14,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#0F0A1E] text-white">
       <Head>
-        <title>12zapisok</title>
+        <title>12 записок</title>
         <meta name="description" content="Квест-спектакли с живыми актёрами" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" key="favicon" />
       </Head>
       <div className="fixed inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center opacity-5 pointer-events-none"></div>
       <Header />
