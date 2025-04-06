@@ -67,7 +67,21 @@
   }
 }
 
+@keyframes silver-glow {
+  0%, 100% {
+    color: #d1d5db; /* text-zinc-400 */
+    text-shadow: 0 0 5px rgba(192, 192, 192, 0.5), 0 0 10px rgba(192, 192, 192, 0.3);
+  }
+  50% {
+    color: #e5e7eb; /* text-zinc-200 */
+    text-shadow: 0 0 10px rgba(192, 192, 192, 0.8), 0 0 20px rgba(192, 192, 192, 0.5);
+  }
+}
+
+.silver-glow {
+  animation: silver-glow 2s ease-in-out infinite;
+}
+
 .border-l-12 {
   border-left-width: 12px;
 }
-
