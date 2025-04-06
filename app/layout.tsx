@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Квест-спектакли с ведущим и актёрами',
-  description: 'квест-кафе 12записок',
-  generator: 'Next.js', // Обновляем, так как v0.dev больше не актуален
+  title: '12 записок',
+  description: 'Квест-спектакли с живыми актёрами',
+  generator: 'Next.js',
   icons: {
-    icon: '/favicon.ico', // Указываем favicon
+    icon: '/uploads/favicon.ico', // Обновляем путь к favicon
   },
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru"> {/* Меняем язык на русский */}
+    <html lang="ru">
       <body>{children}</body>
     </html>
   );
