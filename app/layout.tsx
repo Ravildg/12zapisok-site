@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Квест-кафе 12записок',
-  description: 'Квест-спектакли с ведущим и актёрами',
+  title: 'Квест-спектакли с ведущим и актёрами',
+  description: 'квест-кафе 12записок',
   generator: 'Next.js', // Обновляем, так как v0.dev больше не актуален
   icons: {
     icon: '/favicon.ico', // Указываем favicon
