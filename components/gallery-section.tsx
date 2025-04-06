@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Статические данные для галереи
+// Статические данные для галереи с добавленными новыми фото
 const galleryImages = [
   "/uploads/bt.jpg",
   "/uploads/bt1.jpg",
@@ -13,14 +13,21 @@ const galleryImages = [
   "/uploads/bt5.jpg",
   "/uploads/bt6.jpg",
   "/uploads/bt7.jpg",
+  "/uploads/bt20.jpg", // Новое
   "/uploads/ki0.jpg",
   "/uploads/ki2.jpg",
   "/uploads/ki3.jpg",
+  "/uploads/ki5.jpg",  // Новое
   "/uploads/ki6.jpg",
+  "/uploads/ki20.jpg", // Новое
+  "/uploads/ki22.jpg", // Новое
   "/uploads/kn10.jpg",
   "/uploads/kn12.jpg",
   "/uploads/kn7.jpg",
   "/uploads/kn8.jpg",
+  "/uploads/kn20.jpg", // Новое
+  "/uploads/kn21.jpg", // Новое
+  "/uploads/kn23.jpg", // Новое
   "/uploads/pv10.jpg",
   "/uploads/pv11.jpg",
   "/uploads/pv3.jpg",
