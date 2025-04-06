@@ -16,7 +16,7 @@ export default function Home() {
       <Head>
         <title>12 записок</title>
         <meta name="description" content="Квест-спектакли с ведущим и актёрами" />
-        <link rel="icon" href="/favicon.ico" key="favicon" />
+        <link rel="icon" href="public/favicon.ico" key="favicon" />
       </Head>
       <div className="fixed inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center opacity-5 pointer-events-none"></div>
       <Header />
