@@ -72,7 +72,7 @@ export default function Footer() {
                 </div>
                 <a
                   href="tel:+79302838368"
-                  className="text-zinc-400 hover:text-purple-400 transition-colors"
+                  className="silver-glow transition-colors"
                 >
                   +7 (930) 283-83-68
                 </a>
