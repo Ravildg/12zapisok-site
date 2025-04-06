@@ -24,7 +24,7 @@ const fallbackData: HowItWorksData = {
     "Погрузитесь в приключение",
   ],
   buttonText: "Оставить заявку",
-  image: "/uploads/bt1.jpg",
+  image: "/uploads/logo.png",
 };
 
 export default function HowItWorksSection() {
