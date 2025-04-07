@@ -28,8 +28,7 @@ const galleryImages = [
   "/uploads/kn21.jpg", // Новое
   "/uploads/kn23.jpg", // Новое
   "/uploads/pv10.jpg",
-  "/uploads/pv11.jpg",
-  "/uploads/pv3.jpg",
+   "/uploads/pv3.jpg",
   "/uploads/pv4.jpg",
   "/uploads/pv5.jpg",
   "/uploads/rn10.jpg",
