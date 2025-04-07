@@ -34,13 +34,13 @@ export default function Home() {
         <meta property="og:description" content="Квест-спектакли с ведущим и актёрами для незабываемых впечатлений!" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://12zapisok.ru" />
-        <meta property="og:image" content="https://12zapisok.ru/og-image.jpg" /> {/* Укажи путь к изображению для шаринга */}
+        <meta property="og:image" content="https://12zapisok.ru/uploads/4.jpg" /> {/* Обновлён путь к изображению */}
 
         {/* Twitter Card метатеги */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="12 записок" />
         <meta name="twitter:description" content="Квест-спектакли с ведущим и актёрами для незабываемых впечатлений!" />
-        <meta name="twitter:image" content="https://12zapisok.ru/4.jpg" /> {/* Укажи путь к изображению для шаринга */}
+        <meta name="twitter:image" content="https://12zapisok.ru/uploads/4.jpg" /> {/* Обновлён путь к изображению */}
       </Head>
       <div className="fixed inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center opacity-5 pointer-events-none"></div>
       <Header />
