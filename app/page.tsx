@@ -9,8 +9,17 @@ import GallerySection from "@/components/gallery-section";
 import ReviewsSection from "@/components/reviews-section";
 import PricingSection from "@/components/pricing-section";
 import Footer from "@/components/footer";
+import { useEffect } from "react"; // Добавляем useEffect
+import { initMetrika } from "../lib/metrika"; // Импортируем функцию для Метрики
 
 export default function Home() {
+  // Инициализация Яндекс Метрики
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") {
+      initMetrika();
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0F0A1E] text-white">
       <Head>
