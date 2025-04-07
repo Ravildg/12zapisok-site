@@ -1,3 +1,5 @@
+"use client"; // Добавляем директиву
+
 import Head from "next/head";
 import Header from "@/components/header";
 import HeroSection from "@/components/hero-section";
@@ -9,8 +11,8 @@ import GallerySection from "@/components/gallery-section";
 import ReviewsSection from "@/components/reviews-section";
 import PricingSection from "@/components/pricing-section";
 import Footer from "@/components/footer";
-import { useEffect } from "react"; // Добавляем useEffect
-import { initMetrika } from "../lib/metrika"; // Импортируем функцию для Метрики
+import { useEffect } from "react";
+import { initMetrika } from "../lib/metrika";
 
 export default function Home() {
   // Инициализация Яндекс Метрики
