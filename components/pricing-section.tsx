@@ -21,7 +21,7 @@ const pricingOptions: PricingOption[] = [
     id: 1,
     title: "Стандарт",
     description: "Идеально для небольшой компании друзей",
-    price: "от 19 500 ₽",
+    price: "от 19 800 ₽",
     features: [
       "До 10 участников",
       "2 актёра",
