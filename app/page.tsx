@@ -1,4 +1,4 @@
-"use client"; // Добавляем директиву
+"use client";
 
 import Head from "next/head";
 import Header from "@/components/header";
@@ -28,6 +28,19 @@ export default function Home() {
         <title>12 записок</title>
         <meta name="description" content="Квест-спектакли с ведущим и актёрами" />
         <link rel="icon" href="public/favicon.ico" key="favicon" />
+
+        {/* Open Graph метатеги */}
+        <meta property="og:title" content="12 записок" />
+        <meta property="og:description" content="Квест-спектакли с ведущим и актёрами для незабываемых впечатлений!" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://12zapisok.ru" />
+        <meta property="og:image" content="https://12zapisok.ru/og-image.jpg" /> {/* Укажи путь к изображению для шаринга */}
+
+        {/* Twitter Card метатеги */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="12 записок" />
+        <meta name="twitter:description" content="Квест-спектакли с ведущим и актёрами для незабываемых впечатлений!" />
+        <meta name="twitter:image" content="https://12zapisok.ru/4.jpg" /> {/* Укажи путь к изображению для шаринга */}
       </Head>
       <div className="fixed inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center opacity-5 pointer-events-none"></div>
       <Header />
