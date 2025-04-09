@@ -1,56 +1,74 @@
-"use client"
-
-import { useEffect, useState } from "react"
-
-interface Occasion {
-  title: string
-  description: string
-  image: string
-}
+import { Sparkles } from "lucide-react"
 
 export default function OccasionsSection() {
-  const [occasions, setOccasions] = useState<Occasion[]>([])
-
-  useEffect(() => {
-    const saved = localStorage.getItem("occasionsData")
-    if (saved) {
-      try {
-        setOccasions(JSON.parse(saved))
-      } catch (e) {
-        console.warn("Ошибка чтения occasionsData:", e)
-      }
-    }
-  }, [])
-
   return (
-    <section id="occasions" className="py-20 bg-[#0F0A1E] relative">
-      <div className="container mx-auto px-4 text-center mb-12">
-        <span className="inline-block px-4 py-1 text-sm rounded-full bg-purple-800/40 text-purple-300 mb-2">
-          Особые моменты
-        </span>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Когда хочется <span className="text-pink-400">большего</span>, чем просто встреча
-        </h2>
-        <p className="text-zinc-300 max-w-2xl mx-auto">
-          Погрузитесь в историю, которую будете вспоминать всей командой. Квест-спектакль легко впишется в любой повод и сделает его особенным.
-        </p>
-      </div>
+    <section id="поводы" className="py-20 bg-[#0F0A1E] relative">
+      {/* Decorative elements */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-600/10 rounded-full blur-3xl"></div>
 
-      <div className="container mx-auto px-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {occasions.map((item, index) => (
-          <div
-            key={index}
-            className="bg-[#1A1333] rounded-xl p-6 text-left text-white border border-purple-700/30 hover:border-purple-500 transition"
-          >
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-40 object-cover rounded mb-4 border border-purple-900/30"
-            />
-            <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-            <p className="text-zinc-300">{item.description}</p>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="inline-block mb-4">
+            <span className="inline-block px-4 py-1 rounded-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-purple-300 text-sm font-medium border border-purple-500/30">
+              Особые моменты
+            </span>
           </div>
-        ))}
+
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Когда хочется{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">большего</span>
+            , чем просто встреча
+          </h2>
+
+          <p className="text-lg text-zinc-300">
+            Погрузитесь в историю, которую будете вспоминать всей командой. Квест-спектакль легко впишется в любой повод
+            и сделает его особенным.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-[#1A1333] p-8 rounded-xl border border-purple-900/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,43,226,0.2)] group">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Sparkles className="h-6 w-6 text-purple-400" />
+            </div>
+
+            <h3 className="text-xl font-semibold mb-4 group-hover:text-purple-400 transition-colors">
+              День рождения или юбилей
+            </h3>
+
+            <p className="text-zinc-400">
+              Станьте героями сюжета в свой особенный день. Необычный формат праздника, который запомнится надолго.
+            </p>
+          </div>
+
+          <div className="bg-[#1A1333] p-8 rounded-xl border border-purple-900/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,43,226,0.2)] group">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Sparkles className="h-6 w-6 text-purple-400" />
+            </div>
+
+            <h3 className="text-xl font-semibold mb-4 group-hover:text-purple-400 transition-colors">Корпоратив</h3>
+
+            <p className="text-zinc-400">
+              Объединит команду сильнее, чем любой тренинг. Совместное приключение раскрывает коллег с новой стороны.
+            </p>
+          </div>
+
+          <div className="bg-[#1A1333] p-8 rounded-xl border border-purple-900/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_15px_rgba(138,43,226,0.2)] group">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Sparkles className="h-6 w-6 text-purple-400" />
+            </div>
+
+            <h3 className="text-xl font-semibold mb-4 group-hover:text-purple-400 transition-colors">
+              Вечер с друзьями
+            </h3>
+
+            <p className="text-zinc-400">
+              Превратите обычную встречу в незабываемое приключение. Новый формат досуга для тех, кто ценит яркие
+              впечатления.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   )
