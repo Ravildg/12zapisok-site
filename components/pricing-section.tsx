@@ -21,7 +21,7 @@ const pricingOptions: PricingOption[] = [
     id: 1,
     title: "Стандарт",
     description: "Идеально для небольшой компании друзей",
-    price: "от 19 800 ₽",
+    price: "от 22 500 ₽",
     features: [
       "До 10 участников",
       "2 актёра",
@@ -35,7 +35,7 @@ const pricingOptions: PricingOption[] = [
     id: 2,
     title: "Премиум",
     description: "Оптимально для дня рождения или корпоратива",
-    price: "от 26 400 ₽",
+    price: "от 28 000 ₽",
     features: [
       "До 12 участников",
       "3 актёра",
@@ -51,7 +51,7 @@ const pricingOptions: PricingOption[] = [
     id: 3,
     title: "ВИП",
     description: "Максимальное погружение для особых случаев",
-    price: "от 40 000 ₽",
+    price: "от 43 800 ₽",
     features: [
       "До 25 участников",
       "4 актёра",
